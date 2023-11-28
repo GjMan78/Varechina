@@ -2,11 +2,13 @@
 
 # Autore: GjMan78 per forum.ubuntu.it.org
 
-# Ultimo aggiornamento: 27-11-2023
+# Ultimo aggiornamento: 28-11-2023
 
 # Script PARECCHIO work in progress. 
 
-# DA IMPLEMENTARE: gestione dei log di ogni comando, utli per eventuali debug in caso di errori.
+# DA IMPLEMENTARE: 
+# - gestione dei log di ogni comando, utli per  debug in caso di errori.
+# - eventuale progress bar (dialog --gauge ??)
 
 # DA MIGLIORARE: pulizia file temporanei
 
@@ -17,9 +19,10 @@ Disclaimer () {
 
 dialog --backtitle "Dichiarazione di NON responsabilità" \
 --title "LEGGI BENE!" \
---msgbox "L'autore declina ogni responsabilità per eventuali danni o malesseri fisici o psicologici causati dallo script. \n\n
-Proseguendo accetti di utilizzare il software fornito a tuo rischio e pericolo e dichiari di essere l'unico responsabile dei danni derivanti dall'uso dello stesso.\n\n 
+--msgbox "L'autore declina ogni responsabilità per eventuali danni diretti o indiretti e/o malesseri fisici o psicologici causati dallo script. \n\n
+Proseguendo accetti di utilizzare il software fornito a tuo rischio e pericolo e dichiari di essere l'unico responsabile dei possibili danni derivanti dall'uso dello stesso.\n\n 
 Non si accettano lamentele se il cane miagola o il gatto abbaia durante l'esecuzione del programma.\n\n
+Può causare sonnolenza. Leggere attentamente il foglietto illustrativo.\n\n
 Have Fun! \n" 0 0
 
 }
@@ -55,12 +58,18 @@ apt -y dist-upgrade" 0 0
   resp=$?
 
   if [ $resp -eq 1 ]; then
-        Menu
+        return
   fi
 
   clear
 
-  if apt update && apt -y dist-upgrade ; then
+  apt update
+  cmd1=$?
+
+  apt -y dist-upgrade
+  cmd2=$?
+
+  if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ]; then
     dialog --msgbox "Aggiornamento del sistema eseguito con successo!" 0 0
   else
     dialog --msgbox "Ops...Qualcosa è andato storto!" 0 0
@@ -78,7 +87,7 @@ apt purge '?config-files'" 0 0
   resp=$?
 
   if [ $resp -eq 1 ]; then
-        Menu
+        return
   fi
 
   clear
@@ -106,7 +115,7 @@ dpkg --configure -a \n
   resp=$?
 
   if [ $resp -eq 1 ]; then
-        Menu
+        return
   fi
 
   clear
@@ -140,12 +149,33 @@ journalctl --rotate --vacuum-size=500M" 0 0
   resp=$?
 
   if [ $resp -eq 1 ]; then
-        Menu
+        return
   fi
 
 clear
 
-if apt -y autoremove && apt -y autopurge && apt clean && apt autoclean && deborphan | xargs apt -y purge && apt purge '?config-files'; then
+apt -y autoremove
+cmd1=$?
+
+apt -y autopurge
+cmd2=$?
+
+apt clean
+cmd3=$?
+
+apt autoclean
+cmd4=$?
+
+deborphan | xargs apt -y purge
+cmd5=$?
+
+apt purge '?config-files'
+cmd6=$?
+
+journalctl --rotate --vacuum-size=500M
+cmd7=$?
+
+if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ] && [ $cmd3 -eq 0 ] && [ $cmd4 -eq 0 ] && [ $cmd5 -eq 0 ] && [ $cmd6 -eq 0 ] && [ $cmd7 -eq 0 ]; then
     dialog --msgbox "Pulizia dei pacchetti eseguita con successo!" 0 0
   else
     dialog --msgbox "Ops...Qualcosa è andato storto!" 0 0
@@ -156,12 +186,13 @@ if apt -y autoremove && apt -y autopurge && apt clean && apt autoclean && deborp
 # Menu principale dello script
 
 Menu () {
-  choices="$(dialog --backtitle "Script Manutenzione Ubuntu" --stdout --radiolist "Manutenzione del sistema:" 0 0 0 \
-    1 "Aggiornamento del sistema" on \
+  resp=''
+  choice=''
+  choices="$(dialog --ok-label "Esegui" --cancel-label "Esci" --backtitle "Script Manutenzione Ubuntu" --stdout --checklist "Manutenzione del sistema:" 0 0 0 \
+    1 "Aggiornamento del sistema" off \
     2 "Eliminazione file temporanei" off \
     3 "Eliminazione pacchetti orfani e vecchi log" off \
-    4 "Riparazione pacchetti bloccati o danneggiati" off \
-    5 "Esci" off)"
+    4 "Riparazione pacchetti bloccati o danneggiati" off)"
 
   resp=$?
   if [ $resp -eq 1 ]; then
