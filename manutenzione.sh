@@ -11,6 +11,7 @@
 # - eventuale progress bar (dialog --gauge ??)
 
 # - funzioni utili per il forum (diagnosi aggiornamenti - diagnosi rete)
+
 # ls -l /etc/apt/sources.list.d | awk '{ print $9 }'
 
 # DA MIGLIORARE: pulizia file temporanei
