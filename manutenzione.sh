@@ -57,16 +57,26 @@ dialog \
 # Se i pacchetti mancano vengono installati, altrimenti passa oltre.
 
 Requisiti (){
+  
   pkg=dialog
   status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
   if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
-     apt -y install $pkg
+    clear
+    echo "Devo installare "${pkg}" come dipendenza necessaria. Premi INVIO per continuare"
+    read
+    apt -y install $pkg
+    ris=1
   fi
 
   pkg=deborphan
   status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
   if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
-     apt -y install $pkg
+    dialog \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --title "Conferma installazione dipendenze" \
+    --msgbox "Devo installare ${pkg} come dipendenza necessaria.\n Premi OK per continuare" 0 0
+    apt -y install $pkg
+    ris=1
   fi
 
 }
@@ -76,7 +86,6 @@ Requisiti (){
 Aggiornamento (){
 
 dialog \
-  --stdout \
   --backtitle "Script Manutenzione Ubuntu" \
   --title "Conferma" \
   --yesno "Confermi l'esecuzione di questi comandi?\n\n
@@ -110,7 +119,7 @@ apt -y dist-upgrade" 0 0
     dialog \
 	--backtitle "Script Manutenzione Ubuntu" \
 	--title "Errore" \
-	--msgbox "Ops...Qualcosa è andato storto!" 0 0
+	--msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
   fi
 }
 
@@ -151,7 +160,7 @@ dialog \
 	dialog \
 	  --backtitle "Script Manutenzione Ubuntu" \
 	  --title "Errore" \
-	  --msgbox "Ops...Qualcosa è andato storto!" 0 0
+	  --msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
   fi
 }
 
@@ -189,7 +198,8 @@ dialog \
   else
         dialog \
 	  --backtitle "Script Manutenzione Ubuntu" \
-	  --title "Errore" --msgbox "Ops...Qualcosa è andato storto!" 0 0
+	  --title "Errore" \
+	  --msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
   fi
 }
 
@@ -248,7 +258,7 @@ if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ] && [ $cmd3 -eq 0 ] && [ $cmd4 -eq 0 ] && [
     dialog \
 	--backtitle "Script Manutenzione Ubuntu" \
 	--title "Errore" \
-	--msgbox "Ops...Qualcosa è andato storto!" 0 0
+	--msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
   fi
 
 }
@@ -256,7 +266,7 @@ if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ] && [ $cmd3 -eq 0 ] && [ $cmd4 -eq 0 ] && [
 ApriLog () {
 
 if [  -f ${logfile} ]; then
-	sudo -u ${utente} xdg-open ${logfile} > /dev/null 2>&1
+	sudo -H -u ${utente} xdg-open ${logfile} > /dev/null 2>&1
 else
 	dialog \
 	  --title "Errore" \
@@ -287,7 +297,7 @@ fi
 for choice in ${choices}; do 
         case ${choice} in
           1) 
-	    sudo -u ${SUDO_USER} dpkg --get-selections > /home/${SUDO_USER}/installed-software.log 
+	    sudo -H -u ${utente} dpkg --get-selections > /home/${utente}/installed-software.log 
             dialog \
 		--ok-label "Chiudi" \
 		--extra-button \
@@ -299,11 +309,11 @@ for choice in ${choices}; do
 	    if [ $? -eq 0 ]; then
 		clear; return
 	    else
-		sudo -u ${SUDO_USER} xdg-open /home/${SUDO_USER}/installed-software.log > /dev/null 2>&1
+		sudo -H -u ${utente} xdg-open /home/${utente}/installed-software.log > /dev/null 2>&1
 	    fi
 	    ;;
           2)
-            if  [ -e /home/${SUDO_USER}/installed-software.log ]; then
+            if  [ -e /home/${utente}/installed-software.log ]; then
 		dialog \
                     --title "Attenzione!" \
                     --backtitle "Script Manutenzione Ubuntu" \
@@ -311,7 +321,7 @@ for choice in ${choices}; do
 		if [ ! $? -eq 0 ]; then
 			return
 		fi
-		dpkg --set-selections < /home/${SUDO_USER}/installed-software.log && apt-get dselect-upgrade
+		dpkg --set-selections < /home/${utente}/installed-software.log && apt-get dselect-upgrade
 	    else
 	    	dialog \
  	      	    --title "Errore!" \
@@ -358,6 +368,13 @@ Menu () {
   done
 }
 
+CheckConnection (){
+  while ! ping -c 1 www.google.com &>/dev/null; do
+    echo "Questo script richiede di essere connessi ad Internet per funzionare."
+    exit
+  done
+}
+
 # Main 
 
 # Controlla se lo script è eseguito con privilegi di root
@@ -368,6 +385,9 @@ if [ "$EUID" -ne 0 ];
        echo "Eseguilo così: sudo "$0
 exit
 fi
+
+# Controlla la connessione
+CheckConnection
 
 # Controlla se le dipendenze sono soddisfatte
 Requisiti
