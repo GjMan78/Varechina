@@ -2,14 +2,12 @@
 
 # Autore: GjMan78 per forum.ubuntu.it.org
 
-# Ultimo aggiornamento: 29-11-2023
+# Ultimo aggiornamento: 01-12-2023
 
 # Script PARECCHIO work in progress. 
 
 # DA IMPLEMENTARE: 
 # 
-# - eventuale progress bar (dialog --gauge ??)
-
 # - funzioni utili per il forum (diagnosi aggiornamenti - diagnosi rete)
 
 # ls -l /etc/apt/sources.list.d | awk '{ print $9 }'
