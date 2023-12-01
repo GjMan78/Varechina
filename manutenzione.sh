@@ -9,7 +9,7 @@
 # DA IMPLEMENTARE: 
 # 
 # - funzioni utili per il forum (diagnosi aggiornamenti - diagnosi rete)
-
+# cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 10 | head -n 1
 # ls -l /etc/apt/sources.list.d | awk '{ print $9 }'
 
 # DA MIGLIORARE: pulizia file temporanei
@@ -105,14 +105,14 @@ apt -y dist-upgrade" 0 0
       --title "Aggiornamento del sistema" \
       --backtitle "Script Manutenzione Ubuntu" \
       --progressbox 25 90
-  cmd1=$?
+  cmd1=${PIPESTATUS[0]}
 
   apt-get -y dist-upgrade | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
     dialog \
     --title "Aggiornamento del sistema" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90 
-  cmd2=$?
+  cmd2=${PIPESTATUS[0]}
 
   data=$(date)
   echo -e "\n\n ****** FINE LOG AGGIORNAMENTO SISTEMA ****** ${data} ******\n\n" | \
@@ -157,14 +157,14 @@ dialog \
       --title "Pulizia file temporanei" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90 
-  cmd1=$?
+  cmd1=${PIPESTATUS[0]}
 
   apt-get purge '?config-files' | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
     dialog \\
       --title "Pulizia file temporanei" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90 
-  cmd2=$?
+  cmd2=${PIPESTATUS[0]}
 
   data=$(date)
   echo -e "\n\n ****** FINE LOG PULIZIA FILE TEMPORANEI ****** ${data} ******\n\n" | \
@@ -207,14 +207,14 @@ dialog \
       --title "Riparazione pacchetti" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90 
-  cmd1=$?
+  cmd1=${PIPESTATUS[0]}
 
   dpkg --configure -a | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
     dialog \\
       --title "Riparazione pacchetti" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90 
-  cmd2=$?
+  cmd2=${PIPESTATUS[0]}
 
   data=$(date)
   echo -e "\n\n ****** FINE LOG RIPARAZIONE PACCHETTI ****** ${data} ******\n\n" | \
@@ -262,49 +262,49 @@ apt-get -y autoremove 2>&1 | \
       --title "Pulizia pacchetti obsoleti" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90 
-cmd1=$?
+cmd1=${PIPESTATUS[0]}
 
 apt-get -y autopurge 2>&1 | \
     dialog \\
       --title "Pulizia pacchetti obsoleti" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90 
-cmd2=$?
+cmd2=${PIPESTATUS[0]}
 
 apt-get clean 2>&1 | \
     dialog \\
       --title "Pulizia pacchetti obsoleti" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90 
-cmd3=$?
+cmd3=${PIPESTATUS[0]}
 
 apt-get autoclean 2>&1 | \
     dialog \\
       --title "Pulizia pacchetti obsoleti" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90 
-cmd4=$?
+cmd4=${PIPESTATUS[0]}
 
 deborphan | xargs apt-get -y purge 2>&1 | \
     dialog \\
       --title "Pulizia pacchetti obsoleti" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90 
-cmd5=$?
+cmd5=${PIPESTATUS[0]}
 
 apt-get purge '?config-files' 2>&1 | \
     dialog \\
       --title "Pulizia pacchetti obsoleti" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90 
-cmd6=$?
+cmd6=${PIPESTATUS[0]}
 
 journalctl --rotate --vacuum-size=500M 2>&1 | \
     dialog \\
       --title "Pulizia pacchetti obsoleti" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90 
-cmd7=$?
+cmd7=${PIPESTATUS[0]}
 
 data=$(date)
 echo -e "\n\n ****** FINE LOG PULIZIA PACCHETTI OBSOLETI ****** ${data} ******\n\n" | \
@@ -357,38 +357,38 @@ if [ $? -eq 1 ]; then
 fi
 
 for choice in ${choices}; do 
-        case ${choice} in
-          1) 
+  case ${choice} in
+    1) 
 	    sudo -H -u ${utente} dpkg --get-selections > /home/${utente}/installed-software.log 
-            dialog \
-		--ok-label "Chiudi" \
-		--extra-button \
-		--extra-label "Apri File" \
-		--title "Esportazione completata" \
-		--backtitle "Script Manutenzione Ubuntu" \
-		--msgbox "L'elenco dei pacchetti installati è stato salvato nella tua /home" 0 0
+      dialog \
+		  --ok-label "Chiudi" \
+		  --extra-button \
+		  --extra-label "Apri File" \
+		  --title "Esportazione completata" \
+		  --backtitle "Script Manutenzione Ubuntu" \
+		  --msgbox "L'elenco dei pacchetti installati è stato salvato nella tua /home" 0 0
 
 	    if [ $? -eq 0 ]; then
-		clear; return
+		    clear; return
 	    else
-		sudo -H -u ${utente} xdg-open /home/${utente}/installed-software.log > /dev/null 2>&1
+		    sudo -H -u ${utente} xdg-open /home/${utente}/installed-software.log > /dev/null 2>&1
 	    fi
-	    ;;
-          2)
-            if  [ -e /home/${utente}/installed-software.log ]; then
-		dialog \
-                    --title "Attenzione!" \
-                    --backtitle "Script Manutenzione Ubuntu" \
-                    --yesno "Funzione non testata proseguire ugualmente?" 0 0
-		if [ ! $? -eq 0 ]; then
-			return
-		fi
-		dpkg --set-selections < /home/${utente}/installed-software.log && apt-get dselect-upgrade
+	  ;;
+    2)
+      if  [ -e /home/${utente}/installed-software.log ]; then
+		    dialog \
+        --title "Attenzione!" \
+        --backtitle "Script Manutenzione Ubuntu" \
+        --yesno "Funzione non testata proseguire ugualmente?" 0 0
+		    if [ ! $? -eq 0 ]; then
+			    return
+		    fi
+		    dpkg --set-selections < /home/${utente}/installed-software.log && apt-get dselect-upgrade
 	    else
 	    	dialog \
- 	      	    --title "Errore!" \
-	      	    --backtitle "Script Manutenzione Ubuntu" \
-	            --msgbox "Manca il file installed-software.log" 0 0
+ 	      --title "Errore!" \
+	      --backtitle "Script Manutenzione Ubuntu" \
+	      --msgbox "Manca il file installed-software.log" 0 0
 	    fi 
 	    ;;
         esac 
