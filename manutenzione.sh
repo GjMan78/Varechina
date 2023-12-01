@@ -78,7 +78,7 @@ Requisiti (){
     apt -y install $pkg
     ris=1
   fi
-
+clear
 }
 
 # Questa funzione effettua l'aggiornamento del sistema con i classici comandi
@@ -99,16 +99,26 @@ apt -y dist-upgrade" 0 0
   clear
 
   data=$(date)
-  echo -e "\n\n ****** INIZIO LOG AGGIORNAMENTO SISTEMA ****** ${data} ******\n\n" | sudo -u ${utente} tee -a ${logfile}
+  echo -e "\n\n ****** INIZIO LOG AGGIORNAMENTO SISTEMA ****** ${data} ******\n\n" | \
+  sudo -u ${utente} tee -a ${logfile} > /dev/null
 
-  apt update | sudo -u ${utente} tee -a ${logfile}
+  apt-get update | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
+    dialog \
+      --title "Aggiornamento del sistema" \
+      --backtitle "Script Manutenzione Ubuntu" \
+      --progressbox 25 90
   cmd1=$?
 
-  apt -y dist-upgrade | sudo -u ${utente} tee -a ${logfile}
+  apt-get -y dist-upgrade | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
+    dialog \
+    --title "Aggiornamento del sistema" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90 
   cmd2=$?
 
   data=$(date)
-  echo -e "\n\n ****** FINE LOG AGGIORNAMENTO SISTEMA ****** ${data} ******\n\n" | sudo -u ${utente} tee -a ${logfile}
+  echo -e "\n\n ****** FINE LOG AGGIORNAMENTO SISTEMA ****** ${data} ******\n\n" | \
+  sudo -u ${utente} tee -a ${logfile} > /dev/null
 
   if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ]; then
     dialog \
@@ -121,6 +131,7 @@ apt -y dist-upgrade" 0 0
 	--title "Errore" \
 	--msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
   fi
+clear  
 }
 
 # Funzione di eliminazione dei file inutili.
@@ -140,16 +151,26 @@ dialog \
   clear
 
   data=$(date)
-  echo -e "\n\n ****** INIZIO LOG PULIZIA FILE TEMPORANEI ****** ${data} ******\n\n" | sudo -u ${utente} tee -a ${logfile}
+  echo -e "\n\n ****** INIZIO LOG PULIZIA FILE TEMPORANEI ****** ${data} ******\n\n" | \
+  sudo -u ${utente} tee -a ${logfile} > /dev/null
 
-  rm -rf /home/$USER/.cache/* | sudo -u ${utente} tee -a ${logfile}
+  rm -rf /home/$USER/.cache/* | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
+    dialog \
+      --title "Pulizia file temporanei" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90 
   cmd1=$?
 
-  apt purge '?config-files' | sudo -u ${utente} tee -a ${logfile}
+  apt-get purge '?config-files' | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
+    dialog \\
+      --title "Pulizia file temporanei" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90 
   cmd2=$?
 
   data=$(date)
-  echo -e "\n\n ****** FINE LOG PULIZIA FILE TEMPORANEI ****** ${data} ******\n\n" | sudo -u ${utente} tee -a ${logfile}
+  echo -e "\n\n ****** FINE LOG PULIZIA FILE TEMPORANEI ****** ${data} ******\n\n" | \
+  sudo -u ${utente} tee -a ${logfile} > /dev/null
 
   if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ]; then
 	dialog \
@@ -162,6 +183,7 @@ dialog \
 	  --title "Errore" \
 	  --msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
   fi
+clear
 }
 
 RiparazionePacchetti (){
@@ -179,16 +201,26 @@ dialog \
   clear
 
   data=$(date)
-  echo -e "\n\n ****** INIZIO LOG RIPARAZIONE PACCHETTI ****** ${data} ******\n\n" | sudo -u ${utente} tee -a ${logfile}
+  echo -e "\n\n ****** INIZIO LOG RIPARAZIONE PACCHETTI ****** ${data} ******\n\n" | \
+  sudo -u ${utente} tee -a ${logfile} > /dev/null
 
-  apt install -f | sudo -u ${utente} tee -a ${logfile}
+  apt-get install -f | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
+    dialog \\
+      --title "Riparazione pacchetti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90 
   cmd1=$?
 
-  dpkg --configure -a | sudo -u ${utente} tee -a ${logfile}
+  dpkg --configure -a | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
+    dialog \\
+      --title "Riparazione pacchetti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90 
   cmd2=$?
 
   data=$(date)
-  echo -e "\n\n ****** FINE LOG RIPARAZIONE PACCHETTI ****** ${data} ******\n\n" | sudo -u ${utente} tee -a ${logfile}
+  echo -e "\n\n ****** FINE LOG RIPARAZIONE PACCHETTI ****** ${data} ******\n\n" | \
+  sudo -u ${utente} tee -a ${logfile} > /dev/null
 
   if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ]; then
         dialog \
@@ -201,6 +233,7 @@ dialog \
 	  --title "Errore" \
 	  --msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
   fi
+clear
 }
 
 
@@ -223,31 +256,61 @@ journalctl --rotate --vacuum-size=500M" 0 0
 clear
 
 data=$(date)
-echo -e "\n\n ****** INIZIO LOG PULIZIA PACCHETTI OBSOLETI ****** ${data} ******\n\n" | sudo -u ${utente} tee -a ${logfile}
+echo -e "\n\n ****** INIZIO LOG PULIZIA PACCHETTI OBSOLETI ****** ${data} ******\n\n" | \
+sudo -u ${utente} tee -a ${logfile} > /dev/null
 
-apt -y autoremove
+apt-get -y autoremove 2>&1 | \
+    dialog \\
+      --title "Pulizia pacchetti obsoleti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90 
 cmd1=$?
 
-apt -y autopurge
+apt-get -y autopurge 2>&1 | \
+    dialog \\
+      --title "Pulizia pacchetti obsoleti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90 
 cmd2=$?
 
-apt clean
+apt-get clean 2>&1 | \
+    dialog \\
+      --title "Pulizia pacchetti obsoleti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90 
 cmd3=$?
 
-apt autoclean
+apt-get autoclean 2>&1 | \
+    dialog \\
+      --title "Pulizia pacchetti obsoleti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90 
 cmd4=$?
 
-deborphan | xargs apt -y purge
+deborphan | xargs apt-get -y purge 2>&1 | \
+    dialog \\
+      --title "Pulizia pacchetti obsoleti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90 
 cmd5=$?
 
-apt purge '?config-files'
+apt-get purge '?config-files' 2>&1 | \
+    dialog \\
+      --title "Pulizia pacchetti obsoleti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90 
 cmd6=$?
 
-journalctl --rotate --vacuum-size=500M
+journalctl --rotate --vacuum-size=500M 2>&1 | \
+    dialog \\
+      --title "Pulizia pacchetti obsoleti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90 
 cmd7=$?
 
 data=$(date)
-echo -e "\n\n ****** FINE LOG PULIZIA PACCHETTI OBSOLETI ****** ${data} ******\n\n" | sudo -u ${utente} tee -a ${logfile}
+echo -e "\n\n ****** FINE LOG PULIZIA PACCHETTI OBSOLETI ****** ${data} ******\n\n" | \
+sudo -u ${utente} tee -a ${logfile} > /dev/null
 
 if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ] && [ $cmd3 -eq 0 ] && [ $cmd4 -eq 0 ] && [ $cmd5 -eq 0 ] && [ $cmd6 -eq 0 ] && [ $cmd7 -eq 0 ]; then
     dialog \
@@ -260,7 +323,7 @@ if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ] && [ $cmd3 -eq 0 ] && [ $cmd4 -eq 0 ] && [
 	--title "Errore" \
 	--msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
   fi
-
+clear
 }
 
 ApriLog () {
@@ -274,6 +337,7 @@ else
 	  --msgbox "Il file non esiste. Devi prima eseguire una delle operazioni di manutenzione" 0 0
 fi
 
+clear
 return
 
 }
@@ -331,7 +395,7 @@ for choice in ${choices}; do
 	    ;;
         esac 
   done
-
+clear
 }
 # Menu principale dello script
 
@@ -362,8 +426,8 @@ Menu () {
           2) PuliziaTemporanei ;;
           3) PuliziaPacchetti ;;
           4) RiparazionePacchetti ;;
-	  5) ApriLog ;;
-	  6) FunzioniUtili :;
+	        5) ApriLog ;;
+	        6) FunzioniUtili ;;
         esac 
   done
 }
@@ -398,3 +462,5 @@ Disclaimer
 
 # Ciclo infinito che richiama la funzione Menu finché l'utente non decide di uscire.
 while :; do Menu ; done
+exit 0
+
