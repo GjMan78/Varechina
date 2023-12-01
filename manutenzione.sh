@@ -63,18 +63,16 @@ Requisiti (){
     echo "Devo installare "${pkg}" come dipendenza necessaria. Premi INVIO per continuare"
     read
     apt -y install $pkg
-    ris=1
   fi
 
   pkg=deborphan
   status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
   if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
     dialog \
-    --backtitle "Script Manutenzione Ubuntu" \
-    --title "Conferma installazione dipendenze" \
-    --msgbox "Devo installare ${pkg} come dipendenza necessaria.\n Premi OK per continuare" 0 0
-    apt -y install $pkg
-    ris=1
+      --backtitle "Script Manutenzione Ubuntu" \
+      --title "Conferma installazione dipendenze" \
+      --msgbox "Devo installare ${pkg} come dipendenza necessaria.\n Premi OK per continuare" 0 0
+      apt -y install $pkg
   fi
 clear
 }
@@ -100,15 +98,19 @@ apt -y dist-upgrade" 0 0
   echo -e "\n\n ****** INIZIO LOG AGGIORNAMENTO SISTEMA ****** ${data} ******\n\n" | \
   sudo -u ${utente} tee -a ${logfile} > /dev/null
 
+  echo -e "\nAPT UPDATE" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+
   apt-get update | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
-    dialog \
-      --title "Aggiornamento del sistema" \
-      --backtitle "Script Manutenzione Ubuntu" \
-      --progressbox 25 90
+  dialog \
+    --title "Aggiornamento del sistema" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90
   cmd1=${PIPESTATUS[0]}
 
+  echo -e "\nAPT -Y DIST-UPGRADE" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+
   apt-get -y dist-upgrade | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
-    dialog \
+  dialog \
     --title "Aggiornamento del sistema" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90 
@@ -120,14 +122,14 @@ apt -y dist-upgrade" 0 0
 
   if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ]; then
     dialog \
-	--backtitle "Script Manutenzione Ubuntu" \
-	--title "Successo" \
-	--msgbox "Aggiornamento del sistema eseguito con successo!" 0 0
+	    --backtitle "Script Manutenzione Ubuntu" \
+	    --title "Successo" \
+	    --msgbox "Aggiornamento del sistema eseguito con successo!" 0 0
   else
     dialog \
-	--backtitle "Script Manutenzione Ubuntu" \
-	--title "Errore" \
-	--msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
+	    --backtitle "Script Manutenzione Ubuntu" \
+	    --title "Errore" \
+	    --msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
   fi
 clear  
 }
@@ -140,7 +142,8 @@ dialog \
   --stdout \
   --backtitle "Script Manutenzione Ubuntu" \
   --title "Conferma" \
-  --yesno "Confermi l'esecuzione di questi comandi? \n\n rm -rf /home/$USER/.cache/* \n apt purge '?config-files'" 0 0
+  --yesno "Confermi l'esecuzione di questi comandi? \n\n rm -rf /home/$USER/.cache/* \n \
+apt purge '?config-files'" 0 0
 
   if [ $? -eq 1 ]; then
         return
@@ -152,18 +155,22 @@ dialog \
   echo -e "\n\n ****** INIZIO LOG PULIZIA FILE TEMPORANEI ****** ${data} ******\n\n" | \
   sudo -u ${utente} tee -a ${logfile} > /dev/null
 
-  rm -rf /home/$USER/.cache/* | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
+  echo -e "\nRM -RF /HOME/${utente}/.cache" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+
+  rm -rf /home/$utente/.cache/* | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
     dialog \
       --title "Pulizia file temporanei" \
-    --backtitle "Script Manutenzione Ubuntu" \
-    --progressbox 25 90 
+      --backtitle "Script Manutenzione Ubuntu" \
+      --progressbox 25 90 
   cmd1=${PIPESTATUS[0]}
 
+  echo -e "\nAPT PURGE '?CONFIG-FILES'" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+
   apt-get purge '?config-files' | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
-    dialog \\
+    dialog \
       --title "Pulizia file temporanei" \
-    --backtitle "Script Manutenzione Ubuntu" \
-    --progressbox 25 90 
+      --backtitle "Script Manutenzione Ubuntu" \
+      --progressbox 25 90 
   cmd2=${PIPESTATUS[0]}
 
   data=$(date)
@@ -171,15 +178,15 @@ dialog \
   sudo -u ${utente} tee -a ${logfile} > /dev/null
 
   if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ]; then
-	dialog \
-	  --backtitle "Script Manutenzione Ubuntu" \
-	  --title "Successo" \
-	  --msgbox "Eliminazione file temporanei completata" 0 0
+	  dialog \
+	    --backtitle "Script Manutenzione Ubuntu" \
+	    --title "Successo" \
+	    --msgbox "Eliminazione file temporanei completata" 0 0
   else
-	dialog \
-	  --backtitle "Script Manutenzione Ubuntu" \
-	  --title "Errore" \
-	  --msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
+	  dialog \
+	    --backtitle "Script Manutenzione Ubuntu" \
+	    --title "Errore" \
+	    --msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
   fi
 clear
 }
@@ -202,16 +209,20 @@ dialog \
   echo -e "\n\n ****** INIZIO LOG RIPARAZIONE PACCHETTI ****** ${data} ******\n\n" | \
   sudo -u ${utente} tee -a ${logfile} > /dev/null
 
+  echo -e "\nAPT INSTALL -F" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+
   apt-get install -f | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
-    dialog \\
-      --title "Riparazione pacchetti" \
+  dialog \
+    --title "Riparazione pacchetti" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90 
   cmd1=${PIPESTATUS[0]}
 
+  echo -e "\nDPKG --CONFIGURE -A" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+
   dpkg --configure -a | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
-    dialog \\
-      --title "Riparazione pacchetti" \
+  dialog \
+    --title "Riparazione pacchetti" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90 
   cmd2=${PIPESTATUS[0]}
@@ -221,15 +232,15 @@ dialog \
   sudo -u ${utente} tee -a ${logfile} > /dev/null
 
   if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ]; then
-        dialog \
-	  --backtitle "Script Manutenzione Ubuntu" \
-	  --title "Successo" \
-	  --msgbox "Riparazione pacchetti  completata" 0 0
+    dialog \
+	    --backtitle "Script Manutenzione Ubuntu" \
+	    --title "Successo" \
+	    --msgbox "Riparazione pacchetti  completata" 0 0
   else
-        dialog \
-	  --backtitle "Script Manutenzione Ubuntu" \
-	  --title "Errore" \
-	  --msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
+    dialog \
+	    --backtitle "Script Manutenzione Ubuntu" \
+	    --title "Errore" \
+	    --msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
   fi
 clear
 }
@@ -239,13 +250,11 @@ clear
 PuliziaPacchetti () {
 
 dialog \
-  --stdout \
-  --backtitle "Script Manutenzione Ubuntu" \ 
+  --backtitle "Script Manutenzione Ubuntu" \
   --title "Conferma" \
-  --yesno "Confermi l'esecuzione di questi comandi?\n apt clean \n apt autoclean \n apt autoremove \n apt autopurge \n
-deborphan | xargs apt -y purge \n
-apt purge '?config-files'\n
-journalctl --rotate --vacuum-size=500M" 0 0
+  --yesno "Confermi l'esecuzione di questi comandi?\napt clean\napt autoclean\n\
+apt autoremove\napt autopurge\ndeborphan | xargs apt -y purge\n\
+apt purge '?config-files'\njournalctl --rotate --vacuum-size=500M" 0 0
 
   if [ $? -eq 1 ]; then
         return
@@ -257,77 +266,94 @@ data=$(date)
 echo -e "\n\n ****** INIZIO LOG PULIZIA PACCHETTI OBSOLETI ****** ${data} ******\n\n" | \
 sudo -u ${utente} tee -a ${logfile} > /dev/null
 
-apt-get -y autoremove 2>&1 | \
-    dialog \\
-      --title "Pulizia pacchetti obsoleti" \
-    --backtitle "Script Manutenzione Ubuntu" \
-    --progressbox 25 90 
+echo -e "\nAPT -Y AUTOREMOVE" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+
+apt-get -y autoremove 2>&1 | sudo -u ${utente} tee -a ${logfile}  | \
+dialog \
+  --title "Pulizia pacchetti obsoleti" \
+  --backtitle "Script Manutenzione Ubuntu" \
+  --progressbox 25 90 
 cmd1=${PIPESTATUS[0]}
 
-apt-get -y autopurge 2>&1 | \
-    dialog \\
-      --title "Pulizia pacchetti obsoleti" \
-    --backtitle "Script Manutenzione Ubuntu" \
-    --progressbox 25 90 
+echo -e "\nAPT -Y AUTOPURGE" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+
+apt-get -y autopurge 2>&1 | sudo -u ${utente} tee -a ${logfile} | \
+dialog \
+  --title "Pulizia pacchetti obsoleti" \
+  --backtitle "Script Manutenzione Ubuntu" \
+  --progressbox 25 90 
 cmd2=${PIPESTATUS[0]}
 
-apt-get clean 2>&1 | \
-    dialog \\
-      --title "Pulizia pacchetti obsoleti" \
-    --backtitle "Script Manutenzione Ubuntu" \
-    --progressbox 25 90 
+echo -e "\nAPT CLEAN" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+
+apt-get clean 2>&1 | sudo -u ${utente} tee -a ${logfile} | \
+dialog \
+  --title "Pulizia pacchetti obsoleti" \
+  --backtitle "Script Manutenzione Ubuntu" \
+  --progressbox 25 90 
 cmd3=${PIPESTATUS[0]}
 
-apt-get autoclean 2>&1 | \
-    dialog \\
-      --title "Pulizia pacchetti obsoleti" \
-    --backtitle "Script Manutenzione Ubuntu" \
-    --progressbox 25 90 
+echo -e "\nAPT AUTOCLEAN" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+
+apt-get autoclean 2>&1 | sudo -u ${utente} tee -a ${logfile} | \
+dialog \
+  --title "Pulizia pacchetti obsoleti" \
+  --backtitle "Script Manutenzione Ubuntu" \
+  --progressbox 25 90 
 cmd4=${PIPESTATUS[0]}
 
-deborphan | xargs apt-get -y purge 2>&1 | \
-    dialog \\
-      --title "Pulizia pacchetti obsoleti" \
-    --backtitle "Script Manutenzione Ubuntu" \
-    --progressbox 25 90 
+echo -e "\nDEBORPHAN | XARGS APT -Y PURGE" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+
+deborphan | xargs apt-get -y purge 2>&1 | sudo -u ${utente} tee -a ${logfile}  | \
+dialog \
+  --title "Pulizia pacchetti obsoleti" \
+  --backtitle "Script Manutenzione Ubuntu" \
+  --progressbox 25 90 
 cmd5=${PIPESTATUS[0]}
 
-apt-get purge '?config-files' 2>&1 | \
-    dialog \\
-      --title "Pulizia pacchetti obsoleti" \
-    --backtitle "Script Manutenzione Ubuntu" \
-    --progressbox 25 90 
+echo -e "\nAPT PURGE '?CONFIG-FILES'" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+
+apt-get purge '?config-files' 2>&1 | sudo -u ${utente} tee -a ${logfile} | \
+dialog \
+  --title "Pulizia pacchetti obsoleti" \
+  --backtitle "Script Manutenzione Ubuntu" \
+  --progressbox 25 90 
 cmd6=${PIPESTATUS[0]}
 
-journalctl --rotate --vacuum-size=500M 2>&1 | \
-    dialog \\
-      --title "Pulizia pacchetti obsoleti" \
-    --backtitle "Script Manutenzione Ubuntu" \
-    --progressbox 25 90 
+echo -e "JOURNALCTL --ROTATE --VACUUM-SIZE=500M" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+
+journalctl --rotate --vacuum-size=500M 2>&1 | sudo -u ${utente} tee -a ${logfile}  | \
+dialog \
+  --title "Pulizia pacchetti obsoleti" \
+  --backtitle "Script Manutenzione Ubuntu" \
+  --progressbox 25 90 
 cmd7=${PIPESTATUS[0]}
 
 data=$(date)
 echo -e "\n\n ****** FINE LOG PULIZIA PACCHETTI OBSOLETI ****** ${data} ******\n\n" | \
 sudo -u ${utente} tee -a ${logfile} > /dev/null
 
-if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ] && [ $cmd3 -eq 0 ] && [ $cmd4 -eq 0 ] && [ $cmd5 -eq 0 ] && [ $cmd6 -eq 0 ] && [ $cmd7 -eq 0 ]; then
+echo "1: ${cmd1} 2: ${cmd2} 3: ${cmd3} 4: ${cmd4} 5: ${cmd5} 6: ${cmd6} 7: ${cmd7}" && read
+
+if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ] && [ $cmd3 -eq 0 ] && [ $cmd4 -eq 0 ] &&\
+ [ $cmd5 -eq 0 ] && [ $cmd6 -eq 0 ] && [ $cmd7 -eq 0 ]; then
     dialog \
-	--backtitle "Script Manutenzione Ubuntu" \
-	--title "Successo" \
-	--msgbox "Pulizia dei pacchetti eseguita con successo!" 0 0
+	    --backtitle "Script Manutenzione Ubuntu" \
+	    --title "Successo" \
+	    --msgbox "Pulizia dei pacchetti eseguita con successo!" 0 0
   else
     dialog \
-	--backtitle "Script Manutenzione Ubuntu" \
-	--title "Errore" \
-	--msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
+	    --backtitle "Script Manutenzione Ubuntu" \
+	    --title "Errore" \
+	    --msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
   fi
 clear
 }
 
 ApriLog () {
 
-if [  -f ${logfile} ]; then
-	sudo -H -u ${utente} xdg-open ${logfile} > /dev/null 2>&1
+if [  -f $1 ]; then
+	sudo -H -u ${utente} xdg-open $1 > /dev/null 2>&1
 else
 	dialog \
 	  --title "Errore" \
@@ -347,8 +373,10 @@ cmdF=(dialog \
 	--cancel-label "Indietro" \
 	--backtitle "Script Manutenzione Ubuntu" \
 	--menu "Funzioni (forse) Utili" 0 0 0)
+
 optionsF=(1 "Salva elenco pacchetti installati"
-          2 "Installa pacchetti da elenco salvato")
+          2 "Installa pacchetti da elenco salvato"
+          3 "Apri file installed-software.log")
 
 choices=$("${cmdF[@]}" "${optionsF[@]}" 2>&1 >/dev/tty)
 
@@ -361,12 +389,12 @@ for choice in ${choices}; do
     1) 
 	    sudo -H -u ${utente} dpkg --get-selections > /home/${utente}/installed-software.log 
       dialog \
-		  --ok-label "Chiudi" \
-		  --extra-button \
-		  --extra-label "Apri File" \
-		  --title "Esportazione completata" \
-		  --backtitle "Script Manutenzione Ubuntu" \
-		  --msgbox "L'elenco dei pacchetti installati è stato salvato nella tua /home" 0 0
+		    --ok-label "Chiudi" \
+		    --extra-button \
+		    --extra-label "Apri File" \
+		    --title "Esportazione completata" \
+		    --backtitle "Script Manutenzione Ubuntu" \
+		    --msgbox "L'elenco dei pacchetti installati è stato salvato nella tua /home" 0 0
 
 	    if [ $? -eq 0 ]; then
 		    clear; return
@@ -377,22 +405,23 @@ for choice in ${choices}; do
     2)
       if  [ -e /home/${utente}/installed-software.log ]; then
 		    dialog \
-        --title "Attenzione!" \
-        --backtitle "Script Manutenzione Ubuntu" \
-        --yesno "Funzione non testata proseguire ugualmente?" 0 0
+          --title "Attenzione!" \
+          --backtitle "Script Manutenzione Ubuntu" \
+          --yesno "Funzione non testata proseguire ugualmente?" 0 0
 		    if [ ! $? -eq 0 ]; then
 			    return
 		    fi
 		    dpkg --set-selections < /home/${utente}/installed-software.log && apt-get dselect-upgrade
 	    else
 	    	dialog \
- 	      --title "Errore!" \
-	      --backtitle "Script Manutenzione Ubuntu" \
-	      --msgbox "Manca il file installed-software.log" 0 0
+ 	        --title "Errore!" \
+	        --backtitle "Script Manutenzione Ubuntu" \
+	        --msgbox "Manca il file installed-software.log" 0 0
 	    fi 
 	    ;;
-        esac 
-  done
+    3) ApriLog /home/${utente}/installed-software.log ;;
+  esac 
+done
 clear
 }
 # Menu principale dello script
@@ -400,10 +429,11 @@ clear
 Menu () {
 
   cmd=(dialog \
-	--ok-label "Esegui" \
-	--cancel-label "Esci" \
-	--backtitle "Script Manutenzione Ubuntu" \
-	--menu "Manutenzione del sistema" 0 0 0)
+	  --ok-label "Esegui" \
+	  --cancel-label "Esci" \
+	  --backtitle "Script Manutenzione Ubuntu" \
+	  --menu "Manutenzione del sistema" 0 0 0)
+  
   options=(1 "Aggiornamento del sistema"
            2 "Eliminazione file temporanei"
            3 "Eliminazione pacchetti orfani e vecchi log"
@@ -424,7 +454,7 @@ Menu () {
           2) PuliziaTemporanei ;;
           3) PuliziaPacchetti ;;
           4) RiparazionePacchetti ;;
-	        5) ApriLog ;;
+	        5) ApriLog ${logfile} ;;
 	        6) FunzioniUtili ;;
         esac 
   done
