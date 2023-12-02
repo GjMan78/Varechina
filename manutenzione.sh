@@ -580,7 +580,7 @@ dialog --textbox ${filetemp} 20 80
 cat ${filetemp} | xclip -selection c
 
 dialog \
-  --backtitle "Script Manutenzione Ubuntu" \
+  --backtitle "Funzioni per forum.ubuntu-it.org" \
   --title "Info" \
   --msgbox "Ho copiato il report negli appunti. Incollalo sul forum senza modificare nulla." 0 0
 }
