@@ -478,15 +478,16 @@ apt-get upgrade | sudo -u ${utente} tee -a ${filetemp} | \
 
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
+
+#APRE IL FILE DA POSTARE SUL FORUM
+dialog --textbox ${filetemp} 20 80
+
+cat ${filetemp} | xclip -selection c
+
 dialog \
   --backtitle "Script Manutenzione Ubuntu" \
   --title "Info" \
-  --msgbox "Copia l'intero contenuto del file ed incollalo sul forum senza modificare nulla." 0 0 
-
-#APRE IL FILE DA POSTARE SUL FORUM
-
-sudo -H -u ${utente} xdg-open ${filetemp} > /dev/null 2>&1
-
+  --msgbox "Ho copiato il report negli appunti. Incollalo sul forum senza modificare nulla." 0 0
 }
 
 DiagnosticaRete () {
@@ -499,7 +500,7 @@ echo -e "\n\n[b]lspci -nnk | grep -A3 -i net[/b]\n[code]" | sudo -u ${utente} te
 
 lspci -nnk | grep -A3 -i net | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
-    --title "Diagnostica problemi aggiornamenti" \
+    --title "Diagnostica problemi di rete" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90
 
@@ -510,7 +511,7 @@ echo -e "\n\n[b]lsusb[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 lsusb | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
-    --title "Diagnostica problemi aggiornamenti" \
+    --title "Diagnostica problemi di rete" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90
 
@@ -521,7 +522,7 @@ echo -e "\n\n[b]mokutil --sb-state[/b]\n[code]" | sudo -u ${utente} tee -a ${fil
 
 mokutil --sb-state | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
-    --title "Diagnostica problemi aggiornamenti" \
+    --title "Diagnostica problemi di rete" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90
 
@@ -532,7 +533,7 @@ echo -e "\n\n[b]iwconfig[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /
 
 iwconfig | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
-    --title "Diagnostica problemi aggiornamenti" \
+    --title "Diagnostica problemi di rete" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90
 
@@ -543,7 +544,7 @@ echo -e "\n\n[b]nmcli radio[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} 
 
 nmcli radio | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
-    --title "Diagnostica problemi aggiornamenti" \
+    --title "Diagnostica problemi di rete" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90
 
@@ -554,7 +555,7 @@ echo -e "\n\n[b]nmcli connection show[/b]\n[code]" | sudo -u ${utente} tee -a ${
 
 nmcli connection show | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
-    --title "Diagnostica problemi aggiornamenti" \
+    --title "Diagnostica problemi di rete" \
     --backtitle "Script Manutenzione Ubuntu" \
     --progressbox 25 90
 
@@ -564,20 +565,18 @@ echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 echo -e "\n\n[b]rfkill list[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 rfkill list | sudo -u ${utente} tee -a ${filetemp} | \
-  dialog \
-    --title "Diagnostica problemi aggiornamenti" \
-    --backtitle "Script Manutenzione Ubuntu" \
-    --progressbox 25 90
 
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#APRE IL FILE DA POSTARE SUL FORUM
+dialog --textbox ${filetemp} 20 80
+
+cat ${filetemp} | xclip -selection c
 
 dialog \
   --backtitle "Script Manutenzione Ubuntu" \
   --title "Info" \
-  --msgbox "Copia l'intero contenuto del file ed incollalo sul forum senza modificare nulla." 0 0 
-
-#APRE IL FILE DA POSTARE SUL FORUM
-sudo -H -u ${utente} xdg-open ${filetemp} > /dev/null 2>&1
+  --msgbox "Ho copiato il report negli appunti. Incollalo sul forum senza modificare nulla." 0 0
 }
 
 MenuForum () {
