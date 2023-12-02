@@ -62,15 +62,15 @@ Requisiti (){
     apt -y install $pkg
   fi
 
-  #pkg=
-  #status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
-  #if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
-  #  dialog \
-  #    --backtitle "Script Manutenzione Ubuntu" \
-  #    --title "Conferma installazione dipendenze" \
-  #    --msgbox "Devo installare ${pkg} come dipendenza necessaria.\n Premi OK per continuare" 0 0
-  #    apt -y install $pkg
-  #fi
+  pkg=xclip
+  status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
+  if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
+    dialog \
+      --backtitle "Script Manutenzione Ubuntu" \
+      --title "Conferma installazione dipendenze" \
+      --msgbox "Devo installare ${pkg} come dipendenza necessaria.\n Premi OK per continuare" 0 0
+      apt -y install $pkg
+  fi
 clear
 }
 
@@ -358,7 +358,7 @@ clear
 ApriLog () {
 
 if [  -f $1 ]; then
-	sudo -H -u ${utente} xdg-open $1 > /dev/null 2>&1
+	sudo -H -u ${utente} gio open $1 > /dev/null 2>&1
 else
 	dialog \
 	  --title "Errore" \
@@ -404,7 +404,7 @@ for choice in ${choices}; do
 	    if [ $? -eq 0 ]; then
 		    clear; return
 	    else
-		    sudo -H -u ${utente} xdg-open /home/${utente}/installed-software.log > /dev/null 2>&1
+		    sudo -H -u ${utente} gio open /home/${utente}/installed-software.log > /dev/null 2>&1
 	    fi
 	  ;;
     2)
