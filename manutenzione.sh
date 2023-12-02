@@ -9,7 +9,7 @@
 # DA IMPLEMENTARE: 
 # 
 # - funzioni utili per il forum (diagnosi aggiornamenti - diagnosi rete)
-# cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 10 | head -n 1
+
 # ls -l /etc/apt/sources.list.d | awk '{ print $9 }'
 
 # DA MIGLIORARE: pulizia file temporanei
@@ -137,13 +137,41 @@ clear
 # Funzione di eliminazione dei file inutili.
 # Da migliorare!
 
-PuliziaTemporanei () {
+PuliziaSistema () {
+
+cmd=(dialog \
+	  --ok-label "Esegui" \
+	  --cancel-label "Indietro" \
+	  --backtitle "Pulizia del Sistema" \
+	  --checklist "Usa la barra spaziatrice per selezionare/deselezionare" 0 0 0)
+  
+  options=(1 "Pulizia della cache e del cestino" off \
+           2 "Pulizia pacchetti orfani e vecchi log" off \
+           3 "Riparazione pacchetti bloccati o danneggiati" off)
+
+  choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
+
+  if [ $? -eq 1 ]; then
+        clear; return
+  fi
+
+
+  for choice in ${choices}; do 
+        case ${choice} in
+          1) PuliziaHome ;;
+          2) PuliziaPacchetti ;;
+          3) RiparazionePacchetti ;;
+        esac 
+  done
+
+}
+
+PuliziaHome () {
 dialog \
-  --stdout \
   --backtitle "Script Manutenzione Ubuntu" \
   --title "Conferma" \
-  --yesno "Confermi l'esecuzione di questi comandi? \n\n rm -rf /home/$USER/.cache/* \n \
-apt purge '?config-files'" 0 0
+  --yesno "Confermi l'esecuzione di questi comandi? \n\n rm -rf /home/$utente/.cache/* \n \
+rm -rf /home/$utente/.local/share/Trash/*" 0 0
 
   if [ $? -eq 1 ]; then
         return
@@ -152,10 +180,10 @@ apt purge '?config-files'" 0 0
   clear
 
   data=$(date)
-  echo -e "\n\n ****** INIZIO LOG PULIZIA FILE TEMPORANEI ****** ${data} ******\n\n" | \
+  echo -e "\n\n ****** INIZIO LOG PULIZIA FILE HOME****** ${data} ******\n\n" | \
   sudo -u ${utente} tee -a ${logfile} > /dev/null
 
-  echo -e "\nRM -RF /HOME/${utente}/.cache" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+  echo -e "\n${date} RM -RF /HOME/${utente}/.cache" | sudo -u ${utente} tee -a ${logfile} > /dev/null
 
   rm -rf /home/$utente/.cache/* | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
     dialog \
@@ -164,9 +192,18 @@ apt purge '?config-files'" 0 0
       --progressbox 25 90 
   cmd1=${PIPESTATUS[0]}
 
-  echo -e "\nAPT PURGE '?CONFIG-FILES'" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+  #echo -e "\nAPT PURGE '?CONFIG-FILES'" | sudo -u ${utente} tee -a ${logfile} > /dev/null
 
-  apt-get purge '?config-files' | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
+  #apt-get purge '?config-files' | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
+  #  dialog \
+  #    --title "Pulizia file temporanei" \
+  #    --backtitle "Script Manutenzione Ubuntu" \
+  #    --progressbox 25 90 
+  #cmd2=${PIPESTATUS[0]}
+
+  echo -e "\n${date} RM -RF ~/.LOCAL/SHARE/TRASH" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+
+  rm -rf /home/${utente}/.local/share/Trash/* | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
     dialog \
       --title "Pulizia file temporanei" \
       --backtitle "Script Manutenzione Ubuntu" \
@@ -174,14 +211,14 @@ apt purge '?config-files'" 0 0
   cmd2=${PIPESTATUS[0]}
 
   data=$(date)
-  echo -e "\n\n ****** FINE LOG PULIZIA FILE TEMPORANEI ****** ${data} ******\n\n" | \
+  echo -e "\n\n ****** FINE LOG PULIZIA FILE HOME ****** ${data} ******\n\n" | \
   sudo -u ${utente} tee -a ${logfile} > /dev/null
 
   if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ]; then
 	  dialog \
 	    --backtitle "Script Manutenzione Ubuntu" \
 	    --title "Successo" \
-	    --msgbox "Eliminazione file temporanei completata" 0 0
+	    --msgbox "Eliminazione file completata" 0 0
   else
 	  dialog \
 	    --backtitle "Script Manutenzione Ubuntu" \
@@ -333,7 +370,7 @@ data=$(date)
 echo -e "\n\n ****** FINE LOG PULIZIA PACCHETTI OBSOLETI ****** ${data} ******\n\n" | \
 sudo -u ${utente} tee -a ${logfile} > /dev/null
 
-echo "1: ${cmd1} 2: ${cmd2} 3: ${cmd3} 4: ${cmd4} 5: ${cmd5} 6: ${cmd6} 7: ${cmd7}" && read
+#echo "1: ${cmd1} 2: ${cmd2} 3: ${cmd3} 4: ${cmd4} 5: ${cmd5} 6: ${cmd6} 7: ${cmd7}" && read
 
 if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ] && [ $cmd3 -eq 0 ] && [ $cmd4 -eq 0 ] &&\
  [ $cmd5 -eq 0 ] && [ $cmd6 -eq 0 ] && [ $cmd7 -eq 0 ]; then
@@ -424,8 +461,188 @@ for choice in ${choices}; do
 done
 clear
 }
-# Menu principale dello script
 
+DiagnosticaAggio () {
+
+filetemp=$(sudo -u ${utente} mktemp)
+
+#ELENCO REPO
+echo -e "\n\n[b]cat /etc/apt/sources.list[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+cat /etc/apt/sources.list | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi aggiornamenti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#EVENTUALI PPA
+echo -e "\n\n[b]ls -l /etc/apt/sources.list.d[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+ls -l /etc/apt/sources.list.d | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi aggiornamenti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#UPDATE
+echo -e "\n\n[b]apt-get update[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+apt-get update | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi aggiornamenti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#UPGRADE
+echo -e "\n\n[b]apt-get upgrade[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+apt-get upgrade | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi aggiornamenti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+dialog \
+  --backtitle "Script Manutenzione Ubuntu" \
+  --title "Info" \
+  --msgbox "Copia l'intero contenuto del file ed incollalo sul forum senza modificare nulla." 0 0 
+
+#APRE IL FILE DA POSTARE SUL FORUM
+
+sudo -H -u ${utente} xdg-open ${filetemp} > /dev/null 2>&1
+
+}
+
+DiagnosticaRete () {
+
+
+filetemp=$(sudo -u ${utente} mktemp)
+
+#LSPCI
+echo -e "\n\n[b]lspci -nnk | grep -A3 -i net[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+lspci -nnk | grep -A3 -i net | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi aggiornamenti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#LSUSB
+echo -e "\n\n[b]lsusb[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+lsusb | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi aggiornamenti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#MOKUTIL
+echo -e "\n\n[b]mokutil --sb-state[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+mokutil --sb-state | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi aggiornamenti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#IWCONFIG
+echo -e "\n\n[b]iwconfig[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+iwconfig | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi aggiornamenti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#NMCLI RADIO
+echo -e "\n\n[b]nmcli radio[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+nmcli radio | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi aggiornamenti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#nmcli connection show
+echo -e "\n\n[b]nmcli connection show[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+nmcli connection show | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi aggiornamenti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#rfkill list
+echo -e "\n\n[b]rfkill list[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+rfkill list | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi aggiornamenti" \
+    --backtitle "Script Manutenzione Ubuntu" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+dialog \
+  --backtitle "Script Manutenzione Ubuntu" \
+  --title "Info" \
+  --msgbox "Copia l'intero contenuto del file ed incollalo sul forum senza modificare nulla." 0 0 
+
+#APRE IL FILE DA POSTARE SUL FORUM
+sudo -H -u ${utente} xdg-open ${filetemp} > /dev/null 2>&1
+}
+
+MenuForum () {
+
+cmd=(dialog \
+	  --ok-label "Esegui" \
+	  --cancel-label "Indietro" \
+	  --backtitle "Funzioni per forum.ubuntu-it.org" \
+	  --menu "Usa la barra spaziatrice per selezionare/deselezionare" 0 0 0)
+  
+  options=(1 "Diagnostica problemi con gli aggiornamenti" \
+           2 "Diagnostica problemi di rete" )
+
+  choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
+
+  if [ $? -eq 1 ]; then
+        clear; return
+  fi
+
+
+  for choice in ${choices}; do 
+        case ${choice} in
+          1) DiagnosticaAggio ;;
+          2) DiagnosticaRete ;;
+        esac 
+  done
+
+}
+
+
+
+
+# Menu principale dello script
 Menu () {
 
   cmd=(dialog \
@@ -435,11 +652,10 @@ Menu () {
 	  --menu "Manutenzione del sistema" 0 0 0)
   
   options=(1 "Aggiornamento del sistema"
-           2 "Eliminazione file temporanei"
-           3 "Eliminazione pacchetti orfani e vecchi log"
-           4 "Riparazione pacchetti bloccati o danneggiati"
-           5 "Apri log delle operazioni effettuate"
-           6 "Funzioni (forse) utili")
+           2 "Pulizia del sistema"
+           3 "Apri log delle operazioni effettuate"
+           4 "Funzioni (forse) utili"
+           5 "Funzioni per forum.ubuntu-it.org")
 
   choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 
@@ -451,17 +667,16 @@ Menu () {
   for choice in ${choices}; do 
         case ${choice} in
           1) Aggiornamento ;;
-          2) PuliziaTemporanei ;;
-          3) PuliziaPacchetti ;;
-          4) RiparazionePacchetti ;;
-	        5) ApriLog ${logfile} ;;
-	        6) FunzioniUtili ;;
+          2) PuliziaSistema ;;
+	        3) ApriLog ${logfile} ;;
+	        4) FunzioniUtili ;;
+          5) MenuForum ;;
         esac 
   done
 }
 
 CheckConnection (){
-  while ! ping -c 1 www.google.com &>/dev/null; do
+  while ! ping -q -c 1 -W 1 google.com >/dev/null 2>&1; do
     echo "Questo script richiede di essere connessi ad Internet per funzionare."
     exit
   done
