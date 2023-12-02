@@ -440,7 +440,7 @@ echo -e "\n\n[b]cat /etc/apt/sources.list[/b]\n[code]" | sudo -u ${utente} tee -
 cat /etc/apt/sources.list | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
     --title "Diagnostica problemi aggiornamenti" \
-    --backtitle "Script Manutenzione Ubuntu" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
     --progressbox 25 90
 
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
@@ -451,7 +451,7 @@ echo -e "\n\n[b]ls -l /etc/apt/sources.list.d[/b]\n[code]" | sudo -u ${utente} t
 ls -l /etc/apt/sources.list.d | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
     --title "Diagnostica problemi aggiornamenti" \
-    --backtitle "Script Manutenzione Ubuntu" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
     --progressbox 25 90
 
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
@@ -462,7 +462,7 @@ echo -e "\n\n[b]apt-get update[/b]\n[code]" | sudo -u ${utente} tee -a ${filetem
 apt-get update | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
     --title "Diagnostica problemi aggiornamenti" \
-    --backtitle "Script Manutenzione Ubuntu" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
     --progressbox 25 90
 
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
@@ -473,19 +473,21 @@ echo -e "\n\n[b]apt-get upgrade[/b]\n[code]" | sudo -u ${utente} tee -a ${filete
 apt-get upgrade | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
     --title "Diagnostica problemi aggiornamenti" \
-    --backtitle "Script Manutenzione Ubuntu" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
     --progressbox 25 90
 
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 
 #APRE IL FILE DA POSTARE SUL FORUM
-dialog --textbox ${filetemp} 20 80
+dialog \
+  --backtitle "Funzioni per forum.ubuntu-it.org" \
+  --textbox ${filetemp} 25 90
 
 cat ${filetemp} | xclip -selection c
 
 dialog \
-  --backtitle "Script Manutenzione Ubuntu" \
+  --backtitle "Funzioni per forum.ubuntu-it.org" \
   --title "Info" \
   --msgbox "Ho copiato il report negli appunti. Incollalo sul forum senza modificare nulla." 0 0
 }
@@ -501,7 +503,7 @@ echo -e "\n\n[b]lspci -nnk | grep -A3 -i net[/b]\n[code]" | sudo -u ${utente} te
 lspci -nnk | grep -A3 -i net | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
     --title "Diagnostica problemi di rete" \
-    --backtitle "Script Manutenzione Ubuntu" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
     --progressbox 25 90
 
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
@@ -512,7 +514,7 @@ echo -e "\n\n[b]lsusb[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 lsusb | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
     --title "Diagnostica problemi di rete" \
-    --backtitle "Script Manutenzione Ubuntu" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
     --progressbox 25 90
 
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
@@ -523,7 +525,7 @@ echo -e "\n\n[b]mokutil --sb-state[/b]\n[code]" | sudo -u ${utente} tee -a ${fil
 mokutil --sb-state | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
     --title "Diagnostica problemi di rete" \
-    --backtitle "Script Manutenzione Ubuntu" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
     --progressbox 25 90
 
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
@@ -534,7 +536,7 @@ echo -e "\n\n[b]iwconfig[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /
 iwconfig | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
     --title "Diagnostica problemi di rete" \
-    --backtitle "Script Manutenzione Ubuntu" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
     --progressbox 25 90
 
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
@@ -545,7 +547,7 @@ echo -e "\n\n[b]nmcli radio[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} 
 nmcli radio | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
     --title "Diagnostica problemi di rete" \
-    --backtitle "Script Manutenzione Ubuntu" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
     --progressbox 25 90
 
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
@@ -556,7 +558,7 @@ echo -e "\n\n[b]nmcli connection show[/b]\n[code]" | sudo -u ${utente} tee -a ${
 nmcli connection show | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
     --title "Diagnostica problemi di rete" \
-    --backtitle "Script Manutenzione Ubuntu" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
     --progressbox 25 90
 
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
@@ -565,6 +567,10 @@ echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 echo -e "\n\n[b]rfkill list[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 rfkill list | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi di rete" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
+    --progressbox 25 90
 
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
