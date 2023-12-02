@@ -2,13 +2,10 @@
 
 # Autore: GjMan78 per forum.ubuntu.it.org
 
-# Ultimo aggiornamento: 01-12-2023
-
 # Script PARECCHIO work in progress. 
 
 # DA IMPLEMENTARE: 
 # 
-# - funzioni utili per il forum (diagnosi aggiornamenti - diagnosi rete)
 
 # ls -l /etc/apt/sources.list.d | awk '{ print $9 }'
 
@@ -65,15 +62,15 @@ Requisiti (){
     apt -y install $pkg
   fi
 
-  pkg=deborphan
-  status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
-  if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
-    dialog \
-      --backtitle "Script Manutenzione Ubuntu" \
-      --title "Conferma installazione dipendenze" \
-      --msgbox "Devo installare ${pkg} come dipendenza necessaria.\n Premi OK per continuare" 0 0
-      apt -y install $pkg
-  fi
+  #pkg=
+  #status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
+  #if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
+  #  dialog \
+  #    --backtitle "Script Manutenzione Ubuntu" \
+  #    --title "Conferma installazione dipendenze" \
+  #    --msgbox "Devo installare ${pkg} come dipendenza necessaria.\n Premi OK per continuare" 0 0
+  #    apt -y install $pkg
+  #fi
 clear
 }
 
@@ -289,8 +286,7 @@ PuliziaPacchetti () {
 dialog \
   --backtitle "Script Manutenzione Ubuntu" \
   --title "Conferma" \
-  --yesno "Confermi l'esecuzione di questi comandi?\napt clean\napt autoclean\n\
-apt autoremove\napt autopurge\ndeborphan | xargs apt -y purge\n\
+  --yesno "Confermi l'esecuzione di questi comandi?\napt-get clean\napt-get autopurge\n\
 apt purge '?config-files'\njournalctl --rotate --vacuum-size=500M" 0 0
 
   if [ $? -eq 1 ]; then
@@ -303,59 +299,32 @@ data=$(date)
 echo -e "\n\n ****** INIZIO LOG PULIZIA PACCHETTI OBSOLETI ****** ${data} ******\n\n" | \
 sudo -u ${utente} tee -a ${logfile} > /dev/null
 
-echo -e "\nAPT -Y AUTOREMOVE" | sudo -u ${utente} tee -a ${logfile} > /dev/null
-
-apt-get -y autoremove 2>&1 | sudo -u ${utente} tee -a ${logfile}  | \
-dialog \
-  --title "Pulizia pacchetti obsoleti" \
-  --backtitle "Script Manutenzione Ubuntu" \
-  --progressbox 25 90 
-cmd1=${PIPESTATUS[0]}
-
-echo -e "\nAPT -Y AUTOPURGE" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+echo -e "\nAPT-GET -Y AUTOPURGE" | sudo -u ${utente} tee -a ${logfile} > /dev/null
 
 apt-get -y autopurge 2>&1 | sudo -u ${utente} tee -a ${logfile} | \
 dialog \
   --title "Pulizia pacchetti obsoleti" \
   --backtitle "Script Manutenzione Ubuntu" \
   --progressbox 25 90 
-cmd2=${PIPESTATUS[0]}
+cmd1=${PIPESTATUS[0]}
 
-echo -e "\nAPT CLEAN" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+echo -e "\nAPT-GET CLEAN" | sudo -u ${utente} tee -a ${logfile} > /dev/null
 
 apt-get clean 2>&1 | sudo -u ${utente} tee -a ${logfile} | \
 dialog \
   --title "Pulizia pacchetti obsoleti" \
   --backtitle "Script Manutenzione Ubuntu" \
   --progressbox 25 90 
-cmd3=${PIPESTATUS[0]}
+cmd2=${PIPESTATUS[0]}
 
-echo -e "\nAPT AUTOCLEAN" | sudo -u ${utente} tee -a ${logfile} > /dev/null
-
-apt-get autoclean 2>&1 | sudo -u ${utente} tee -a ${logfile} | \
-dialog \
-  --title "Pulizia pacchetti obsoleti" \
-  --backtitle "Script Manutenzione Ubuntu" \
-  --progressbox 25 90 
-cmd4=${PIPESTATUS[0]}
-
-echo -e "\nDEBORPHAN | XARGS APT -Y PURGE" | sudo -u ${utente} tee -a ${logfile} > /dev/null
-
-deborphan | xargs apt-get -y purge 2>&1 | sudo -u ${utente} tee -a ${logfile}  | \
-dialog \
-  --title "Pulizia pacchetti obsoleti" \
-  --backtitle "Script Manutenzione Ubuntu" \
-  --progressbox 25 90 
-cmd5=${PIPESTATUS[0]}
-
-echo -e "\nAPT PURGE '?CONFIG-FILES'" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+echo -e "\nAPT-GET PURGE '?CONFIG-FILES'" | sudo -u ${utente} tee -a ${logfile} > /dev/null
 
 apt-get purge '?config-files' 2>&1 | sudo -u ${utente} tee -a ${logfile} | \
 dialog \
   --title "Pulizia pacchetti obsoleti" \
   --backtitle "Script Manutenzione Ubuntu" \
   --progressbox 25 90 
-cmd6=${PIPESTATUS[0]}
+cmd3=${PIPESTATUS[0]}
 
 echo -e "JOURNALCTL --ROTATE --VACUUM-SIZE=500M" | sudo -u ${utente} tee -a ${logfile} > /dev/null
 
@@ -364,7 +333,7 @@ dialog \
   --title "Pulizia pacchetti obsoleti" \
   --backtitle "Script Manutenzione Ubuntu" \
   --progressbox 25 90 
-cmd7=${PIPESTATUS[0]}
+cmd4=${PIPESTATUS[0]}
 
 data=$(date)
 echo -e "\n\n ****** FINE LOG PULIZIA PACCHETTI OBSOLETI ****** ${data} ******\n\n" | \
@@ -372,8 +341,7 @@ sudo -u ${utente} tee -a ${logfile} > /dev/null
 
 #echo "1: ${cmd1} 2: ${cmd2} 3: ${cmd3} 4: ${cmd4} 5: ${cmd5} 6: ${cmd6} 7: ${cmd7}" && read
 
-if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ] && [ $cmd3 -eq 0 ] && [ $cmd4 -eq 0 ] &&\
- [ $cmd5 -eq 0 ] && [ $cmd6 -eq 0 ] && [ $cmd7 -eq 0 ]; then
+if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ] && [ $cmd3 -eq 0 ] && [ $cmd4 -eq 0 ]; then
     dialog \
 	    --backtitle "Script Manutenzione Ubuntu" \
 	    --title "Successo" \
@@ -618,7 +586,7 @@ cmd=(dialog \
 	  --ok-label "Esegui" \
 	  --cancel-label "Indietro" \
 	  --backtitle "Funzioni per forum.ubuntu-it.org" \
-	  --menu "Usa la barra spaziatrice per selezionare/deselezionare" 0 0 0)
+	  --menu "Crea un post per una richiesta di supporto" 0 0 0)
   
   options=(1 "Diagnostica problemi con gli aggiornamenti" \
            2 "Diagnostica problemi di rete" )
