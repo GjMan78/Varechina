@@ -392,7 +392,7 @@ fi
 for choice in ${choices}; do 
   case ${choice} in
     1) 
-	    sudo -H -u ${utente} dpkg --get-selections > /home/${utente}/installed-software.log 
+	    sudo -H -u ${SUDO_USER} -E dpkg --get-selections > /home/${utente}/installed-software.log 
       dialog \
 		    --ok-label "Chiudi" \
 		    --extra-button \
