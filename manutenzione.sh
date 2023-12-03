@@ -59,7 +59,7 @@ Requisiti (){
     clear
     echo "Devo installare "${pkg}" come dipendenza necessaria. Premi INVIO per continuare"
     read
-    apt -y install $pkg
+    apt-get -y install $pkg
   fi
 
   pkg=xclip
@@ -69,7 +69,7 @@ Requisiti (){
       --backtitle "Script Manutenzione Ubuntu" \
       --title "Conferma installazione dipendenze" \
       --msgbox "Devo installare ${pkg} come dipendenza necessaria.\n Premi OK per continuare" 0 0
-      apt -y install $pkg | dialog \
+      apt-get -y install $pkg | dialog \
                               --title "Installazione dipendenze" \
                               --backtitle "Script Manutenzione Ubuntu" \
                               --progressbox 0 0
@@ -85,8 +85,8 @@ dialog \
   --backtitle "Script Manutenzione Ubuntu" \
   --title "Conferma" \
   --yesno "Confermi l'esecuzione di questi comandi?\n\n
-apt update \n
-apt -y dist-upgrade" 0 0
+apt-get update \n
+apt-get -y dist-upgrade" 0 0
 
   if [ $? -eq 1 ]; then
         return
@@ -98,7 +98,7 @@ apt -y dist-upgrade" 0 0
   echo -e "\n\n ****** INIZIO LOG AGGIORNAMENTO SISTEMA ****** ${data} ******\n\n" | \
   sudo -u ${utente} tee -a ${logfile} > /dev/null
 
-  echo -e "\nAPT UPDATE" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+  echo -e "\nAPT-GET UPDATE" | sudo -u ${utente} tee -a ${logfile} > /dev/null
 
   apt-get update | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
   dialog \
@@ -107,7 +107,7 @@ apt -y dist-upgrade" 0 0
     --progressbox 25 90
   cmd1=${PIPESTATUS[0]}
 
-  echo -e "\nAPT -Y DIST-UPGRADE" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+  echo -e "\nAPT-GET -Y DIST-UPGRADE" | sudo -u ${utente} tee -a ${logfile} > /dev/null
 
   apt-get -y dist-upgrade | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
   dialog \
@@ -234,7 +234,7 @@ dialog \
   --stdout \
   --backtitle "Script Manutenzione Ubuntu" \
   --title "Conferma" \
-  --yesno "Confermi l'esecuzione di questi comandi? \n\n apt install -f \n dpkg --configure -a \n" 0 0
+  --yesno "Confermi l'esecuzione di questi comandi? \n\n apt-get install -f \n dpkg --configure -a \n" 0 0
 
   if [ $? -eq 1 ]; then
         return
@@ -246,7 +246,7 @@ dialog \
   echo -e "\n\n ****** INIZIO LOG RIPARAZIONE PACCHETTI ****** ${data} ******\n\n" | \
   sudo -u ${utente} tee -a ${logfile} > /dev/null
 
-  echo -e "\nAPT INSTALL -F" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+  echo -e "\nAPT-GET INSTALL -F" | sudo -u ${utente} tee -a ${logfile} > /dev/null
 
   apt-get install -f | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
   dialog \
@@ -290,7 +290,7 @@ dialog \
   --backtitle "Script Manutenzione Ubuntu" \
   --title "Conferma" \
   --yesno "Confermi l'esecuzione di questi comandi?\napt-get clean\napt-get autopurge\n\
-apt purge '?config-files'\njournalctl --rotate --vacuum-size=500M" 0 0
+apt-get purge '?config-files'\njournalctl --rotate --vacuum-size=500M" 0 0
 
   if [ $? -eq 1 ]; then
         return
