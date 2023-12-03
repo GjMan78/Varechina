@@ -69,7 +69,10 @@ Requisiti (){
       --backtitle "Script Manutenzione Ubuntu" \
       --title "Conferma installazione dipendenze" \
       --msgbox "Devo installare ${pkg} come dipendenza necessaria.\n Premi OK per continuare" 0 0
-      apt -y install $pkg
+      apt -y install $pkg | dialog \
+                              --title "Installazione dipendenze" \
+                              --backtitle "Script Manutenzione Ubuntu" \
+                              --progressbox 0 0
   fi
 clear
 }
@@ -435,7 +438,7 @@ DiagnosticaAggio () {
 filetemp=$(sudo -u ${utente} mktemp)
 
 #ELENCO REPO
-echo -e "\n\n[b]cat /etc/apt/sources.list[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+echo -e "[b]cat /etc/apt/sources.list[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 cat /etc/apt/sources.list | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
@@ -446,7 +449,7 @@ cat /etc/apt/sources.list | sudo -u ${utente} tee -a ${filetemp} | \
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 #EVENTUALI PPA
-echo -e "\n\n[b]ls -l /etc/apt/sources.list.d[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+echo -e "[b]ls -l /etc/apt/sources.list.d[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 ls -l /etc/apt/sources.list.d | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
@@ -457,7 +460,7 @@ ls -l /etc/apt/sources.list.d | sudo -u ${utente} tee -a ${filetemp} | \
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 #UPDATE
-echo -e "\n\n[b]apt-get update[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+echo -e "[b]apt-get update[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 apt-get update | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
@@ -468,7 +471,7 @@ apt-get update | sudo -u ${utente} tee -a ${filetemp} | \
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 #UPGRADE
-echo -e "\n\n[b]apt-get upgrade[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+echo -e "[b]apt-get upgrade[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 apt-get upgrade | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
@@ -476,7 +479,7 @@ apt-get upgrade | sudo -u ${utente} tee -a ${filetemp} | \
     --backtitle "Funzioni per forum.ubuntu-it.org" \
     --progressbox 25 90
 
-echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+echo -e "[/code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 
 #APRE IL FILE DA POSTARE SUL FORUM
@@ -498,7 +501,7 @@ DiagnosticaRete () {
 filetemp=$(sudo -u ${utente} mktemp)
 
 #LSPCI
-echo -e "\n\n[b]lspci -nnk | grep -A3 -i net[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+echo -e "[b]lspci -nnk | grep -A3 -i net[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 lspci -nnk | grep -A3 -i net | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
@@ -509,7 +512,7 @@ lspci -nnk | grep -A3 -i net | sudo -u ${utente} tee -a ${filetemp} | \
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 #LSUSB
-echo -e "\n\n[b]lsusb[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+echo -e "[b]lsusb[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 lsusb | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
@@ -520,7 +523,7 @@ lsusb | sudo -u ${utente} tee -a ${filetemp} | \
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 #MOKUTIL
-echo -e "\n\n[b]mokutil --sb-state[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+echo -e "[b]mokutil --sb-state[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 mokutil --sb-state | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
@@ -531,7 +534,7 @@ mokutil --sb-state | sudo -u ${utente} tee -a ${filetemp} | \
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 #IWCONFIG
-echo -e "\n\n[b]iwconfig[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+echo -e "[b]iwconfig[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 iwconfig | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
@@ -542,7 +545,7 @@ iwconfig | sudo -u ${utente} tee -a ${filetemp} | \
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 #NMCLI RADIO
-echo -e "\n\n[b]nmcli radio[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+echo -e "[b]nmcli radio[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 nmcli radio | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
@@ -553,7 +556,7 @@ nmcli radio | sudo -u ${utente} tee -a ${filetemp} | \
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 #nmcli connection show
-echo -e "\n\n[b]nmcli connection show[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+echo -e "[b]nmcli connection show[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 nmcli connection show | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
@@ -564,7 +567,7 @@ nmcli connection show | sudo -u ${utente} tee -a ${filetemp} | \
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 #rfkill list
-echo -e "\n\n[b]rfkill list[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+echo -e "[b]rfkill list[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 rfkill list | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
