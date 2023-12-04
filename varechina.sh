@@ -160,13 +160,13 @@ clear
 # Funzione di eliminazione dei file inutili.
 # Da migliorare!
 
-PuliziaSistema () {
+MenuManutenzione () {
 
 cmd=(dialog \
 	  --ok-label "Esegui" \
 	  --cancel-label "Indietro" \
 	  --backtitle "Pulizia del Sistema" \
-	  --checklist "Usa la barra spaziatrice per selezionare/deselezionare" 0 0 0)
+	  --menu "Manutenzione del sistema" 0 0)
   
   options=(1 "Pulizia della cache e del cestino" off \
            2 "Pulizia pacchetti orfani e vecchi log" off \
@@ -703,7 +703,7 @@ Menu () {
   for choice in ${choices}; do 
         case ${choice} in
           1) Aggiornamento ;;
-          2) PuliziaSistema ;;
+          2) MenuManutenzione ;;
 	        3) ApriLog ${logfile} ;;
 	        4) FunzioniUtili ;;
           5) MenuForum ;;
