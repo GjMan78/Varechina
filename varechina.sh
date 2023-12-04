@@ -16,7 +16,7 @@
 InizializzaLog () {
 
 utente=${SUDO_USER}
-percorso="/home/${utente}/.config/puliziaubuntu/"
+percorso="/home/${utente}/.config/varechina/"
 nomefile=$(date +%Y-%m-%d)
 logfile="${percorso}${nomefile}.log"
 
@@ -75,12 +75,12 @@ Requisiti (){
   status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
   if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
     dialog \
-      --backtitle "Script Manutenzione Ubuntu" \
+      --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
       --title "Conferma installazione dipendenze" \
       --msgbox "Devo installare ${pkg} come dipendenza necessaria.\n Premi OK per continuare" 0 0
       apt-get -y install $pkg | dialog \
                               --title "Installazione dipendenze" \
-                              --backtitle "Script Manutenzione Ubuntu" \
+                              --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
                               --progressbox 0 0
   fi
 
@@ -88,12 +88,12 @@ Requisiti (){
   #status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
   #if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
   #  dialog \
-  #    --backtitle "Script Manutenzione Ubuntu" \
+  #    --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
   #    --title "Conferma installazione dipendenze" \
   #    --msgbox "Devo installare ${pkg} come dipendenza necessaria.\n Premi OK per continuare" 0 0
   #    apt-get -y install $pkg | dialog \
   #                            --title "Installazione dipendenze" \
-  #                            --backtitle "Script Manutenzione Ubuntu" \
+  #                            --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
   #                            --progressbox 0 0
   #fi
 return 0
@@ -105,7 +105,7 @@ clear
 Aggiornamento (){
 
 dialog \
-  --backtitle "Script Manutenzione Ubuntu" \
+  --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
   --title "Conferma" \
   --yesno "Confermi l'esecuzione di questi comandi?\n\n
 apt-get update \n
@@ -126,7 +126,7 @@ apt-get -y dist-upgrade" 0 0
   apt-get update | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
   dialog \
     --title "Aggiornamento del sistema" \
-    --backtitle "Script Manutenzione Ubuntu" \
+    --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
     --progressbox 25 90
   cmd1=${PIPESTATUS[0]}
 
@@ -135,7 +135,7 @@ apt-get -y dist-upgrade" 0 0
   apt-get -y dist-upgrade | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
   dialog \
     --title "Aggiornamento del sistema" \
-    --backtitle "Script Manutenzione Ubuntu" \
+    --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
     --progressbox 25 90 
   cmd2=${PIPESTATUS[0]}
 
@@ -145,12 +145,12 @@ apt-get -y dist-upgrade" 0 0
 
   if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ]; then
     dialog \
-	    --backtitle "Script Manutenzione Ubuntu" \
+	    --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
 	    --title "Successo" \
 	    --msgbox "Aggiornamento del sistema eseguito con successo!" 0 0
   else
     dialog \
-	    --backtitle "Script Manutenzione Ubuntu" \
+	    --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
 	    --title "Errore" \
 	    --msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
   fi
@@ -191,7 +191,7 @@ cmd=(dialog \
 
 PuliziaHome () {
 dialog \
-  --backtitle "Script Manutenzione Ubuntu" \
+  --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
   --title "Conferma" \
   --yesno "Confermi l'esecuzione di questi comandi? \n\n rm -rf /home/$utente/.cache/* \n \
 rm -rf /home/$utente/.local/share/Trash/*" 0 0
@@ -211,7 +211,7 @@ rm -rf /home/$utente/.local/share/Trash/*" 0 0
   rm -rf /home/$utente/.cache/* | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
     dialog \
       --title "Pulizia file temporanei" \
-      --backtitle "Script Manutenzione Ubuntu" \
+      --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
       --progressbox 25 90 
   cmd1=${PIPESTATUS[0]}
 
@@ -220,7 +220,7 @@ rm -rf /home/$utente/.local/share/Trash/*" 0 0
   #apt-get purge '?config-files' | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
   #  dialog \
   #    --title "Pulizia file temporanei" \
-  #    --backtitle "Script Manutenzione Ubuntu" \
+  #    --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
   #    --progressbox 25 90 
   #cmd2=${PIPESTATUS[0]}
 
@@ -229,7 +229,7 @@ rm -rf /home/$utente/.local/share/Trash/*" 0 0
   rm -rf /home/${utente}/.local/share/Trash/* | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
     dialog \
       --title "Pulizia file temporanei" \
-      --backtitle "Script Manutenzione Ubuntu" \
+      --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
       --progressbox 25 90 
   cmd2=${PIPESTATUS[0]}
 
@@ -239,12 +239,12 @@ rm -rf /home/$utente/.local/share/Trash/*" 0 0
 
   if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ]; then
 	  dialog \
-	    --backtitle "Script Manutenzione Ubuntu" \
+	    --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
 	    --title "Successo" \
 	    --msgbox "Eliminazione file completata" 0 0
   else
 	  dialog \
-	    --backtitle "Script Manutenzione Ubuntu" \
+	    --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
 	    --title "Errore" \
 	    --msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
   fi
@@ -255,7 +255,7 @@ RiparazionePacchetti (){
 
 dialog \
   --stdout \
-  --backtitle "Script Manutenzione Ubuntu" \
+  --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
   --title "Conferma" \
   --yesno "Confermi l'esecuzione di questi comandi? \n\n apt-get install -f \n dpkg --configure -a \n" 0 0
 
@@ -274,7 +274,7 @@ dialog \
   apt-get install -f | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
   dialog \
     --title "Riparazione pacchetti" \
-    --backtitle "Script Manutenzione Ubuntu" \
+    --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
     --progressbox 25 90 
   cmd1=${PIPESTATUS[0]}
 
@@ -283,7 +283,7 @@ dialog \
   dpkg --configure -a | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
   dialog \
     --title "Riparazione pacchetti" \
-    --backtitle "Script Manutenzione Ubuntu" \
+    --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
     --progressbox 25 90 
   cmd2=${PIPESTATUS[0]}
 
@@ -293,12 +293,12 @@ dialog \
 
   if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ]; then
     dialog \
-	    --backtitle "Script Manutenzione Ubuntu" \
+	    --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
 	    --title "Successo" \
 	    --msgbox "Riparazione pacchetti  completata" 0 0
   else
     dialog \
-	    --backtitle "Script Manutenzione Ubuntu" \
+	    --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
 	    --title "Errore" \
 	    --msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
   fi
@@ -310,7 +310,7 @@ clear
 PuliziaPacchetti () {
 
 dialog \
-  --backtitle "Script Manutenzione Ubuntu" \
+  --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
   --title "Conferma" \
   --yesno "Confermi l'esecuzione di questi comandi?\napt-get clean\napt-get autopurge\n\
 apt-get purge '?config-files'\njournalctl --rotate --vacuum-size=500M" 0 0
@@ -330,7 +330,7 @@ echo -e "\nAPT-GET -Y AUTOPURGE" | sudo -u ${utente} tee -a ${logfile} > /dev/nu
 apt-get -y autopurge 2>&1 | sudo -u ${utente} tee -a ${logfile} | \
 dialog \
   --title "Pulizia pacchetti obsoleti" \
-  --backtitle "Script Manutenzione Ubuntu" \
+  --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
   --progressbox 25 90 
 cmd1=${PIPESTATUS[0]}
 
@@ -339,7 +339,7 @@ echo -e "\nAPT-GET CLEAN" | sudo -u ${utente} tee -a ${logfile} > /dev/null
 apt-get clean 2>&1 | sudo -u ${utente} tee -a ${logfile} | \
 dialog \
   --title "Pulizia pacchetti obsoleti" \
-  --backtitle "Script Manutenzione Ubuntu" \
+  --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
   --progressbox 25 90 
 cmd2=${PIPESTATUS[0]}
 
@@ -348,16 +348,16 @@ echo -e "\nAPT-GET PURGE '?CONFIG-FILES'" | sudo -u ${utente} tee -a ${logfile} 
 apt-get purge '?config-files' 2>&1 | sudo -u ${utente} tee -a ${logfile} | \
 dialog \
   --title "Pulizia pacchetti obsoleti" \
-  --backtitle "Script Manutenzione Ubuntu" \
+  --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
   --progressbox 25 90 
 cmd3=${PIPESTATUS[0]}
 
-echo -e "JOURNALCTL --ROTATE --VACUUM-SIZE=500M" | sudo -u ${utente} tee -a ${logfile} > /dev/null
+echo -e "\nJOURNALCTL --ROTATE --VACUUM-SIZE=500M" | sudo -u ${utente} tee -a ${logfile} > /dev/null
 
 journalctl --rotate --vacuum-size=500M 2>&1 | sudo -u ${utente} tee -a ${logfile}  | \
 dialog \
   --title "Pulizia pacchetti obsoleti" \
-  --backtitle "Script Manutenzione Ubuntu" \
+  --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
   --progressbox 25 90 
 cmd4=${PIPESTATUS[0]}
 
@@ -369,12 +369,12 @@ sudo -u ${utente} tee -a ${logfile} > /dev/null
 
 if [ $cmd1 -eq 0 ] && [ $cmd2 -eq 0 ] && [ $cmd3 -eq 0 ] && [ $cmd4 -eq 0 ]; then
     dialog \
-	    --backtitle "Script Manutenzione Ubuntu" \
+	    --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
 	    --title "Successo" \
 	    --msgbox "Pulizia dei pacchetti eseguita con successo!" 0 0
   else
     dialog \
-	    --backtitle "Script Manutenzione Ubuntu" \
+	    --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
 	    --title "Errore" \
 	    --msgbox "Ops...Qualcosa è andato storto! Controlla il log per i dettagli." 0 0
   fi
@@ -386,15 +386,23 @@ ApriLog () {
   if [  -f $1 ]; then
 	  sudo -u ${utente} gio open $1 > /dev/null 2>&1
   else
-	  dialog \
-	    --title "Errore" \
-	    --backtitle "Script Manutenzione Ubuntu" \
-	    --msgbox "Il file non esiste. Devi prima eseguire una delle operazioni di manutenzione" 0 0
+    if [[ "$1" == *"installed"* ]]; then 
+	    dialog \
+	      --title "Errore" \
+	      --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
+	      --msgbox "Il file non esiste.\nDevi prima salvare l'elenco dei pacchetti installati" 0 0
+      return 1
+    else
+      dialog \
+	      --title "Errore" \
+	      --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
+	      --msgbox "Il file non esiste.\nDevi prima eseguire una delle operazioni di manutenzione" 0 0
+      return 1
+    fi
   fi
-
   clear
   
-  return
+  return 0
 }
 
 Appunti () {
@@ -411,7 +419,7 @@ fi
 
 dialog \
   --title "Errore" \
-  --backtitle "Script Manutenzione Ubuntu" \
+  --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
   --msgbox "Ambiente grafico non riconosciuto, impossibile copiare il file $1 negli appunti." 0 0
 return 1
 
@@ -422,7 +430,7 @@ FunzioniUtili () {
 cmdF=(dialog \
 	--ok-label "Esegui" \
 	--cancel-label "Indietro" \
-	--backtitle "Script Manutenzione Ubuntu" \
+	--backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
 	--menu "Funzioni (forse) Utili" 0 0 0)
 
 optionsF=(1 "Salva elenco pacchetti installati"
@@ -444,7 +452,7 @@ for choice in ${choices}; do
 		    --extra-button \
 		    --extra-label "Apri File" \
 		    --title "Esportazione completata" \
-		    --backtitle "Script Manutenzione Ubuntu" \
+		    --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
 		    --msgbox "L'elenco dei pacchetti installati è stato salvato nella tua /home" 0 0
 
 	    if [ $? -eq 0 ]; then
@@ -457,7 +465,7 @@ for choice in ${choices}; do
       if  [ -e /home/${utente}/installed-software.log ]; then
 		    dialog \
           --title "Attenzione!" \
-          --backtitle "Script Manutenzione Ubuntu" \
+          --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
           --yesno "Funzione non testata proseguire ugualmente?" 0 0
 		    if [ ! $? -eq 0 ]; then
 			    return
@@ -466,7 +474,7 @@ for choice in ${choices}; do
 	    else
 	    	dialog \
  	        --title "Errore!" \
-	        --backtitle "Script Manutenzione Ubuntu" \
+	        --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
 	        --msgbox "Manca il file installed-software.log" 0 0
 	    fi 
 	    ;;
@@ -676,11 +684,11 @@ Menu () {
   cmd=(dialog \
 	  --ok-label "Esegui" \
 	  --cancel-label "Esci" \
-	  --backtitle "Script Manutenzione Ubuntu" \
-	  --menu "Manutenzione del sistema" 0 0 0)
+	  --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
+	  --menu "Varechina - Il BleachBit de no'antri!" 0 0 0)
   
   options=(1 "Aggiornamento del sistema"
-           2 "Pulizia del sistema"
+           2 "Manutenzione del sistema"
            3 "Apri log delle operazioni effettuate"
            4 "Funzioni (forse) utili"
            5 "Funzioni per forum.ubuntu-it.org")
@@ -730,7 +738,7 @@ Requisiti
 if [ $? -ne 0 ]; then
   dialog \
   --title "Errore" \
-  --backtitle "Script Manutenzione Ubuntu" \
+  --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
   --msgbox "Ambiente grafico non riconosciuto, impossibile installare le dipendenze." 0 0
   exit 1
 fi
