@@ -62,7 +62,16 @@ Requisiti (){
     apt-get -y install $pkg
   fi
 
-  pkg=xclip
+  if [ "$XDG_SESSION_TYPE" = x11 ]; then 
+    pkg=xclip
+  else
+    if [ "$XDG_SESSION_TYPE" = wayland ]; then 
+      pkg=wl-copy 
+    else 
+      return 1
+    fi
+  fi
+
   status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
   if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
     dialog \
@@ -74,6 +83,20 @@ Requisiti (){
                               --backtitle "Script Manutenzione Ubuntu" \
                               --progressbox 0 0
   fi
+
+  #pkg=wl-copy
+  #status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
+  #if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
+  #  dialog \
+  #    --backtitle "Script Manutenzione Ubuntu" \
+  #    --title "Conferma installazione dipendenze" \
+  #    --msgbox "Devo installare ${pkg} come dipendenza necessaria.\n Premi OK per continuare" 0 0
+  #    apt-get -y install $pkg | dialog \
+  #                            --title "Installazione dipendenze" \
+  #                            --backtitle "Script Manutenzione Ubuntu" \
+  #                            --progressbox 0 0
+  #fi
+return 0
 clear
 }
 
@@ -360,17 +383,37 @@ clear
 
 ApriLog () {
 
-if [  -f $1 ]; then
-	sudo -H -u ${utente} gio open $1 > /dev/null 2>&1
-else
-	dialog \
-	  --title "Errore" \
-	  --backtitle "Script Manutenzione Ubuntu" \
-	  --msgbox "Il file non esiste. Devi prima eseguire una delle operazioni di manutenzione" 0 0
+  if [  -f $1 ]; then
+	  sudo -H -u ${utente} gio open $1 > /dev/null 2>&1
+  else
+	  dialog \
+	    --title "Errore" \
+	    --backtitle "Script Manutenzione Ubuntu" \
+	    --msgbox "Il file non esiste. Devi prima eseguire una delle operazioni di manutenzione" 0 0
+  fi
+
+  clear
+  
+  return
+}
+
+Appunti () {
+
+if [ "$XDG_SESSION_TYPE" = wayland ]; then 
+    cat $1 | wl-copy
+    return 0
 fi
 
-clear
-return
+if [ "$XDG_SESSION_TYPE" = x11 ]; then
+  cat $1 | xclip -selection c
+  return 0
+fi
+
+dialog \
+  --title "Errore" \
+  --backtitle "Script Manutenzione Ubuntu" \
+  --msgbox "Ambiente grafico non riconosciuto, impossibile copiare il file $1 negli appunti." 0 0
+return 1
 
 }
 
@@ -487,12 +530,14 @@ dialog \
   --backtitle "Funzioni per forum.ubuntu-it.org" \
   --textbox ${filetemp} 25 90
 
-cat ${filetemp} | xclip -selection c
-
-dialog \
-  --backtitle "Funzioni per forum.ubuntu-it.org" \
-  --title "Info" \
-  --msgbox "Ho copiato il report negli appunti. Incollalo sul forum senza modificare nulla." 0 0
+#COPIA IL FILE NEGLI APPUNTI
+Appunti $filetemp
+if [ $? -eq 0 ]; then
+  dialog \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
+    --title "Info" \
+    --msgbox "Ho copiato il report negli appunti. Incollalo sul forum senza modificare nulla." 0 0
+fi
 }
 
 DiagnosticaRete () {
@@ -580,7 +625,14 @@ echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 #APRE IL FILE DA POSTARE SUL FORUM
 dialog --textbox ${filetemp} 20 80
 
-cat ${filetemp} | xclip -selection c
+#COPIA IL FILE NEGLI APPUNTI
+Appunti $filetemp
+if [ $? -eq 0 ]; then
+  dialog \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
+    --title "Info" \
+    --msgbox "Ho copiato il report negli appunti. Incollalo sul forum senza modificare nulla." 0 0
+fi
 
 dialog \
   --backtitle "Funzioni per forum.ubuntu-it.org" \
@@ -674,6 +726,14 @@ CheckConnection
 
 # Controlla se le dipendenze sono soddisfatte
 Requisiti
+
+if [ $? -ne 0 ]; then
+  dialog \
+  --title "Errore" \
+  --backtitle "Script Manutenzione Ubuntu" \
+  --msgbox "Ambiente grafico non riconosciuto, impossibile installare le dipendenze." 0 0
+  exit 1
+fi
 
 InizializzaLog
 
