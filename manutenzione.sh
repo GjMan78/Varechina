@@ -66,7 +66,7 @@ Requisiti (){
     pkg=xclip
   else
     if [ "$XDG_SESSION_TYPE" = wayland ]; then 
-      pkg=wl-copy 
+      pkg=wl-clipboard
     else 
       return 1
     fi
