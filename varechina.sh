@@ -165,12 +165,12 @@ MenuManutenzione () {
 cmd=(dialog \
 	  --ok-label "Esegui" \
 	  --cancel-label "Indietro" \
-	  --backtitle "Pulizia del Sistema" \
-	  --menu "Manutenzione del sistema" 0 0)
+	  --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
+	  --menu "Manutenzione del sistema" 0 0 0)
   
-  options=(1 "Pulizia della cache e del cestino" off \
-           2 "Pulizia pacchetti orfani e vecchi log" off \
-           3 "Riparazione pacchetti bloccati o danneggiati" off)
+  options=(1 "Pulizia della cache e del cestino" \
+           2 "Pulizia pacchetti orfani e vecchi log" \
+           3 "Riparazione pacchetti bloccati o danneggiati")
 
   choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 
@@ -657,7 +657,8 @@ cmd=(dialog \
 	  --menu "Crea un post per una richiesta di supporto" 0 0 0)
   
   options=(1 "Diagnostica problemi con gli aggiornamenti" \
-           2 "Diagnostica problemi di rete" )
+           2 "Diagnostica problemi di rete" \
+           3 "Apri il forum per richiedere supporto" )
 
   choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 
@@ -670,6 +671,7 @@ cmd=(dialog \
         case ${choice} in
           1) DiagnosticaAggio ;;
           2) DiagnosticaRete ;;
+          3) sudo -u ${utente} gio open https://forum.ubuntu-it.org/index.php ;;
         esac 
   done
 
