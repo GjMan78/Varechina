@@ -384,7 +384,7 @@ clear
 ApriLog () {
 
   if [  -f $1 ]; then
-	  sudo -H -u ${utente} gio open $1 > /dev/null 2>&1
+	  sudo -u ${utente} gio open $1 > /dev/null 2>&1
   else
 	  dialog \
 	    --title "Errore" \
@@ -438,7 +438,7 @@ fi
 for choice in ${choices}; do 
   case ${choice} in
     1) 
-	    sudo -H -u ${SUDO_USER} -E dpkg --get-selections > /home/${utente}/installed-software.log 
+	    sudo -u ${SUDO_USER} -E dpkg --get-selections > /home/${utente}/installed-software.log 
       dialog \
 		    --ok-label "Chiudi" \
 		    --extra-button \
@@ -450,7 +450,7 @@ for choice in ${choices}; do
 	    if [ $? -eq 0 ]; then
 		    clear; return
 	    else
-		    sudo -H -u ${utente} gio open /home/${utente}/installed-software.log > /dev/null 2>&1
+		    sudo -u ${utente} gio open /home/${utente}/installed-software.log > /dev/null 2>&1
 	    fi
 	  ;;
     2)
