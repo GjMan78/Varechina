@@ -17,8 +17,12 @@ Stiamo integrando anche funzioni per affrontare i più comuni problemi che si po
 Per problemi più seri la sezione "Funzioni per il forum" genera dei report specifici facilitando così la richiesta di supporto.
 L'utente non deve fare altro che aprire una nuova discussione sul forum, spiegare il problema ed incollare il report generato dal programma.
 
-# Installazione
+## Installazione
 
+```bash
 wget https://github.com/GjMan78/Varechina/blob/master/Varechina_0.9_amd64.deb
+```
 
+```bash
 sudo dpkg -i Varechina_0.9_amd64.deb
+```
