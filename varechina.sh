@@ -84,18 +84,18 @@ Requisiti (){
                               --progressbox 0 0
   fi
 
-  #pkg=wl-copy
-  #status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
-  #if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
-  #  dialog \
-  #    --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
-  #    --title "Conferma installazione dipendenze" \
-  #    --msgbox "Devo installare ${pkg} come dipendenza necessaria.\n Premi OK per continuare" 0 0
-  #    apt-get -y install $pkg | dialog \
-  #                            --title "Installazione dipendenze" \
-  #                            --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
-  #                            --progressbox 0 0
-  #fi
+  pkg=inxi
+  status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
+  if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
+    dialog \
+      --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
+      --title "Conferma installazione dipendenze" \
+      --msgbox "Devo installare ${pkg} come dipendenza necessaria.\n Premi OK per continuare" 0 0
+      apt-get -y install $pkg | dialog \
+                              --title "Installazione dipendenze" \
+                              --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
+                              --progressbox 0 0
+  fi
 return 0
 clear
 }
@@ -488,6 +488,39 @@ DiagnosticaAggio () {
 
 filetemp=$(sudo -u ${utente} mktemp)
 
+#inxi -Fxxc0z
+echo -e "[b]inxi -Fxxc0z[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+inxi -Fxxc0z | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi aggiornamenti" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#lsb_release -a
+echo -e "[b]lsb_release -a[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+lsb_release -a | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi aggiornamenti" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#uname -a
+echo -e "[b]uname -a[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+uname -a | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi aggiornamenti" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
 #ELENCO REPO
 echo -e "[b]cat /etc/apt/sources.list[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
@@ -530,8 +563,9 @@ apt-get upgrade | sudo -u ${utente} tee -a ${filetemp} | \
     --backtitle "Funzioni per forum.ubuntu-it.org" \
     --progressbox 25 90
 
-echo -e "[/code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
+echo -e "*** generato automaticamente da Varechina https://github.com/GjMan78/Varechina ***" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 #APRE IL FILE DA POSTARE SUL FORUM
 dialog \
@@ -553,6 +587,50 @@ DiagnosticaRete () {
 
 filetemp=$(sudo -u ${utente} mktemp)
 
+#inxi -Fxxc0z
+echo -e "[b]inxi -Fxxc0z[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+inxi -Fxxc0z | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi di rete" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#lsb_release -a
+echo -e "[b]lsb_release -a[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+lsb_release -a | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi di rete" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#uname -a
+echo -e "[b]uname -a[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+uname -a | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi di rete" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#lshw -c network
+echo -e "[b]lshw -c network[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+lshw -c network | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi di rete" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
 #LSPCI
 echo -e "[b]lspci -nnk | grep -A3 -i net[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
@@ -565,7 +643,7 @@ lspci -nnk | grep -A3 -i net | sudo -u ${utente} tee -a ${filetemp} | \
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 #LSUSB
-echo -e "[b]lsusb[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+echo -e "[b]lsusb[/b]\n[/code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 lsusb | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
@@ -629,6 +707,8 @@ rfkill list | sudo -u ${utente} tee -a ${filetemp} | \
     --progressbox 25 90
 
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+echo -e "*** generato automaticamente da Varechina https://github.com/GjMan78/Varechina ***" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 #APRE IL FILE DA POSTARE SUL FORUM
 dialog --textbox ${filetemp} 20 80
