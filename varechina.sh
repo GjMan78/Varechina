@@ -42,7 +42,7 @@ dialog \
 	o psicologici causati dallo script.\n\nProseguendo accetti di utilizzare il software fornito a tuo rischio e \
 	pericolo e dichiari di essere l'unico responsabile dei possibili danni derivanti dall'uso dello stesso.\n
 	\nNon si accettano lamentele se il cane miagola o il gatto abbaia durante l'esecuzione del programma.\n
-	\nPuò causare sonnolenza. Leggere attentamente il foglietto illustrativo.\n\nHave Fun! \n" 0 0 
+	\nPuò causare sonnolenza. Leggere attentamente il foglietto illustrativo.\n\nHave Fun! \n" 18 70 
 
 }
 
@@ -727,7 +727,7 @@ CheckConnection (){
 if [ "$EUID" -ne 0 ];
   then echo "Per eseguire lo script devi essere root!"
        echo ""
-       echo "Eseguilo così: sudo "$0
+       echo "Eseguilo così: sudo -E "$0
 exit
 fi
 
