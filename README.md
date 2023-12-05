@@ -20,7 +20,7 @@ L'utente non deve fare altro che aprire una nuova discussione sul forum, spiegar
 ## Installazione
 
 ```bash
-wget https://github.com/GjMan78/Varechina/blob/master/Varechina_0.9_amd64.deb
+wget https://github.com/GjMan78/Varechina/releases/download/v0.9/Varechina_0.9_amd64.deb
 ```
 
 ```bash
