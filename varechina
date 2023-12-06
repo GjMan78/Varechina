@@ -42,7 +42,7 @@ dialog \
 	o psicologici causati dallo script.\n\nProseguendo accetti di utilizzare il software fornito a tuo rischio e \
 	pericolo e dichiari di essere l'unico responsabile dei possibili danni derivanti dall'uso dello stesso.\n
 	\nNon si accettano lamentele se il cane miagola o il gatto abbaia durante l'esecuzione del programma.\n
-	\nPuò causare sonnolenza. Leggere attentamente il foglietto illustrativo.\n\nHave Fun! \n" 0 0 
+	\nPuò causare sonnolenza. Leggere attentamente il foglietto illustrativo.\n\nHave Fun! \n" 18 70 
 
 }
 
@@ -84,18 +84,18 @@ Requisiti (){
                               --progressbox 0 0
   fi
 
-  #pkg=wl-copy
-  #status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
-  #if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
-  #  dialog \
-  #    --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
-  #    --title "Conferma installazione dipendenze" \
-  #    --msgbox "Devo installare ${pkg} come dipendenza necessaria.\n Premi OK per continuare" 0 0
-  #    apt-get -y install $pkg | dialog \
-  #                            --title "Installazione dipendenze" \
-  #                            --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
-  #                            --progressbox 0 0
-  #fi
+  pkg=inxi
+  status="$(dpkg-query -W --showformat='${db:Status-Status}' "$pkg" 2>&1)"
+  if [ ! $? = 0 ] || [ ! "$status" = installed ]; then
+    dialog \
+      --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
+      --title "Conferma installazione dipendenze" \
+      --msgbox "Devo installare ${pkg} come dipendenza necessaria.\n Premi OK per continuare" 0 0
+      apt-get -y install $pkg | dialog \
+                              --title "Installazione dipendenze" \
+                              --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
+                              --progressbox 0 0
+  fi
 return 0
 clear
 }
@@ -160,17 +160,17 @@ clear
 # Funzione di eliminazione dei file inutili.
 # Da migliorare!
 
-PuliziaSistema () {
+MenuManutenzione () {
 
 cmd=(dialog \
 	  --ok-label "Esegui" \
 	  --cancel-label "Indietro" \
-	  --backtitle "Pulizia del Sistema" \
-	  --checklist "Usa la barra spaziatrice per selezionare/deselezionare" 0 0 0)
+	  --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
+	  --menu "Manutenzione del sistema" 0 0 0)
   
-  options=(1 "Pulizia della cache e del cestino" off \
-           2 "Pulizia pacchetti orfani e vecchi log" off \
-           3 "Riparazione pacchetti bloccati o danneggiati" off)
+  options=(1 "Pulizia della cache e del cestino" \
+           2 "Pulizia pacchetti orfani e vecchi log" \
+           3 "Riparazione pacchetti bloccati o danneggiati")
 
   choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 
@@ -409,12 +409,12 @@ Appunti () {
 
 if [ "$XDG_SESSION_TYPE" = wayland ]; then 
     cat $1 | wl-copy
-    return 0
+    return 
 fi
 
 if [ "$XDG_SESSION_TYPE" = x11 ]; then
   cat $1 | xclip -selection c
-  return 0
+  return 
 fi
 
 dialog \
@@ -488,6 +488,39 @@ DiagnosticaAggio () {
 
 filetemp=$(sudo -u ${utente} mktemp)
 
+#inxi -Fxxc0z
+echo -e "[b]inxi -Fxxc0z[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+inxi -Fxxc0z | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi aggiornamenti" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#lsb_release -a
+echo -e "[b]lsb_release -a[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+lsb_release -a | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi aggiornamenti" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#uname -a
+echo -e "[b]uname -a[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+uname -a | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi aggiornamenti" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
 #ELENCO REPO
 echo -e "[b]cat /etc/apt/sources.list[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
@@ -530,8 +563,9 @@ apt-get upgrade | sudo -u ${utente} tee -a ${filetemp} | \
     --backtitle "Funzioni per forum.ubuntu-it.org" \
     --progressbox 25 90
 
-echo -e "[/code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
+echo -e "*** generato automaticamente da [url=https://github.com/GjMan78/Varechina]Varechina[/url] ***" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 #APRE IL FILE DA POSTARE SUL FORUM
 dialog \
@@ -546,12 +580,57 @@ if [ $? -eq 0 ]; then
     --title "Info" \
     --msgbox "Ho copiato il report negli appunti. Incollalo sul forum senza modificare nulla." 0 0
 fi
+return
 }
 
 DiagnosticaRete () {
 
 
 filetemp=$(sudo -u ${utente} mktemp)
+
+#inxi -Fxxc0z
+echo -e "[b]inxi -Fxxc0z[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+inxi -Fxxc0z | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi di rete" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#lsb_release -a
+echo -e "[b]lsb_release -a[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+lsb_release -a | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi di rete" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#uname -a
+echo -e "[b]uname -a[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+uname -a | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi di rete" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+#lshw -c network
+echo -e "[b]lshw -c network[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
+lshw -c network | sudo -u ${utente} tee -a ${filetemp} | \
+  dialog \
+    --title "Diagnostica problemi di rete" \
+    --backtitle "Funzioni per forum.ubuntu-it.org" \
+    --progressbox 25 90
+
+echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 #LSPCI
 echo -e "[b]lspci -nnk | grep -A3 -i net[/b]\n[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
@@ -565,7 +644,7 @@ lspci -nnk | grep -A3 -i net | sudo -u ${utente} tee -a ${filetemp} | \
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 #LSUSB
-echo -e "[b]lsusb[code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+echo -e "[b]lsusb[/b]\n[/code]" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 lsusb | sudo -u ${utente} tee -a ${filetemp} | \
   dialog \
@@ -630,6 +709,8 @@ rfkill list | sudo -u ${utente} tee -a ${filetemp} | \
 
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
+echo -e "*** generato automaticamente da [url=https://github.com/GjMan78/Varechina]Varechina[/url] ***" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+
 #APRE IL FILE DA POSTARE SUL FORUM
 dialog --textbox ${filetemp} 20 80
 
@@ -646,6 +727,7 @@ dialog \
   --backtitle "Funzioni per forum.ubuntu-it.org" \
   --title "Info" \
   --msgbox "Ho copiato il report negli appunti. Incollalo sul forum senza modificare nulla." 0 0
+return
 }
 
 MenuForum () {
@@ -657,7 +739,8 @@ cmd=(dialog \
 	  --menu "Crea un post per una richiesta di supporto" 0 0 0)
   
   options=(1 "Diagnostica problemi con gli aggiornamenti" \
-           2 "Diagnostica problemi di rete" )
+           2 "Diagnostica problemi di rete" \
+           3 "Apri il forum per richiedere supporto" )
 
   choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 
@@ -670,6 +753,7 @@ cmd=(dialog \
         case ${choice} in
           1) DiagnosticaAggio ;;
           2) DiagnosticaRete ;;
+          3) sudo -u ${utente} gio open https://forum.ubuntu-it.org/index.php ;;
         esac 
   done
 
@@ -703,7 +787,7 @@ Menu () {
   for choice in ${choices}; do 
         case ${choice} in
           1) Aggiornamento ;;
-          2) PuliziaSistema ;;
+          2) MenuManutenzione ;;
 	        3) ApriLog ${logfile} ;;
 	        4) FunzioniUtili ;;
           5) MenuForum ;;
@@ -725,7 +809,7 @@ CheckConnection (){
 if [ "$EUID" -ne 0 ];
   then echo "Per eseguire lo script devi essere root!"
        echo ""
-       echo "Eseguilo così: sudo "$0
+       echo "Eseguilo così: sudo -E "$0
 exit
 fi
 
