@@ -409,12 +409,12 @@ Appunti () {
 
 if [ "$XDG_SESSION_TYPE" = wayland ]; then 
     cat $1 | wl-copy
-    return 0
+    return 
 fi
 
 if [ "$XDG_SESSION_TYPE" = x11 ]; then
   cat $1 | xclip -selection c
-  return 0
+  return 
 fi
 
 dialog \
@@ -565,7 +565,7 @@ apt-get upgrade | sudo -u ${utente} tee -a ${filetemp} | \
 
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
-echo -e "*** generato automaticamente da Varechina https://github.com/GjMan78/Varechina ***" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+echo -e "*** generato automaticamente da [url=https://github.com/GjMan78/Varechina]Varechina[/url] ***" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 #APRE IL FILE DA POSTARE SUL FORUM
 dialog \
@@ -580,6 +580,7 @@ if [ $? -eq 0 ]; then
     --title "Info" \
     --msgbox "Ho copiato il report negli appunti. Incollalo sul forum senza modificare nulla." 0 0
 fi
+return
 }
 
 DiagnosticaRete () {
@@ -708,7 +709,7 @@ rfkill list | sudo -u ${utente} tee -a ${filetemp} | \
 
 echo -e "[/code]\n\n" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
-echo -e "*** generato automaticamente da Varechina https://github.com/GjMan78/Varechina ***" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
+echo -e "*** generato automaticamente da [url=https://github.com/GjMan78/Varechina]Varechina[/url] ***" | sudo -u ${utente} tee -a ${filetemp} > /dev/null
 
 #APRE IL FILE DA POSTARE SUL FORUM
 dialog --textbox ${filetemp} 20 80
@@ -726,6 +727,7 @@ dialog \
   --backtitle "Funzioni per forum.ubuntu-it.org" \
   --title "Info" \
   --msgbox "Ho copiato il report negli appunti. Incollalo sul forum senza modificare nulla." 0 0
+return
 }
 
 MenuForum () {
