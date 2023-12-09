@@ -418,15 +418,27 @@ ApriLog () {
 }
 
 Appunti () {
-
-if [ "$XDG_SESSION_TYPE" = wayland ]; then 
+# Restituisce 0 se la copia negli appunti funziona, 1 altrimenti
+if [ "$XDG_SESSION_TYPE" = wayland ]; then
+    if [ "wc -c < $1" -ge "20000" ]; then # Se il file supera i 20000 caratteri esporta il file e copia il link
+        link=$(cat $1 | curl -F 'sprunge=<-' http://sprunge.us)
+        echo -e "Il report eccede il limite di caratteri imposto dal forum ed è consultabile qui: "$link | wl-copy
+        return
+    else
     cat $1 | wl-copy
     return 
+    fi
 fi
 
 if [ "$XDG_SESSION_TYPE" = x11 ]; then
-  cat $1 | xclip -selection c
-  return 
+    if [ "wc -c < $1" -ge "20000" ]; then # Se il file supera i 20000 caratteri esporta il file e copia il link
+        link=$(cat $1 | curl -F 'sprunge=<-' http://sprunge.us)
+        echo -e "Il report eccede il limite di caratteri imposto dal forum ed è consultabile qui: "$link | xclip -selection c
+        return
+    else
+    cat $1 | xclip -selection c
+    return
+    fi
 fi
 
 dialog \
