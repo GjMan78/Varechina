@@ -2,15 +2,28 @@
 
 # Autore: GjMan78 per forum.ubuntu.it.org
 
-# Script PARECCHIO work in progress. 
-
-# DA IMPLEMENTARE: 
-# 
-
-# ls -l /etc/apt/sources.list.d | awk '{ print $9 }'
+# Script  work in progress. 
 
 # DA MIGLIORARE: pulizia file temporanei
 
+:'FUNZIONI
+Aggiornamento - Aggiorna il sistema
+Appunti - Copia file negli appunti
+ApriLog - Apre il file indicato
+CheckConnection - Test connessione
+DiagnosticaAggio - Genera report aggiornamenti per il forum
+DiagnosticaRete - Genera report rete per il forum
+Disclaimer - Visualizza il consenso informato
+FunzioniUtili - SottoMenu Funzioni
+InizializzaLog - Crea il file di log 
+Menu - Munu Principale
+MenuForum - SottoMenu Funzioni per il forum
+MenuManutenzione - Sottomenu Manutenzione
+PuliziaHome - Pulisce file inutili nella home
+PuliziaPacchetti - Elimina pacchetti inutilizzati
+Requisiti - Installa le dipendenze necessarie
+RiparazionePacchetti - Esegue riparazione pacchetti
+'
 
 # Log eventi
 InizializzaLog () {
@@ -80,7 +93,7 @@ Requisiti (){
       --msgbox "Devo installare ${pkg} come dipendenza necessaria.\n Premi OK per continuare" 0 0
       apt-get -y install $pkg | dialog \
                               --title "Installazione dipendenze" \
-                              --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
+                            funzione_B  --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
                               --progressbox 0 0
   fi
 
@@ -123,7 +136,7 @@ apt-get -y dist-upgrade" 0 0
 
   echo -e "\nAPT-GET UPDATE" | sudo -u ${utente} tee -a ${logfile} > /dev/null
 
-  apt-get update | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
+  apt-get update 2>&1 | sudo -u ${utente} tee -a ${logfile}  | \
   dialog \
     --title "Aggiornamento del sistema" \
     --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
@@ -132,7 +145,7 @@ apt-get -y dist-upgrade" 0 0
 
   echo -e "\nAPT-GET -Y DIST-UPGRADE" | sudo -u ${utente} tee -a ${logfile} > /dev/null
 
-  apt-get -y dist-upgrade | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
+  apt-get -y dist-upgrade 2>&1 | sudo -u ${utente} tee -a ${logfile}  | \
   dialog \
     --title "Aggiornamento del sistema" \
     --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
@@ -208,7 +221,7 @@ rm -rf /home/$utente/.local/share/Trash/*" 0 0
 
   echo -e "\n${date} RM -RF /HOME/${utente}/.cache" | sudo -u ${utente} tee -a ${logfile} > /dev/null
 
-  rm -rf /home/$utente/.cache/* | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
+  rm -rf /home/$utente/.cache/* 2>&1 | sudo -u ${utente} tee -a ${logfile}  | \
     dialog \
       --title "Pulizia file temporanei" \
       --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
@@ -226,8 +239,7 @@ rm -rf /home/$utente/.local/share/Trash/*" 0 0
 
   echo -e "\n${date} RM -RF ~/.LOCAL/SHARE/TRASH" | sudo -u ${utente} tee -a ${logfile} > /dev/null
 
-  rm -rf /home/${utente}/.local/share/Trash/* | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
-    dialog \
+  rm -rf /home/${utente}/.local/share/Trash/*  2>&1 | sudo -u ${utente} tee -a ${logfile} | \
       --title "Pulizia file temporanei" \
       --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
       --progressbox 25 90 
@@ -271,7 +283,7 @@ dialog \
 
   echo -e "\nAPT-GET INSTALL -F" | sudo -u ${utente} tee -a ${logfile} > /dev/null
 
-  apt-get install -f | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
+  apt-get install -f 2>&1 | sudo -u ${utente} tee -a ${logfile} | \
   dialog \
     --title "Riparazione pacchetti" \
     --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
@@ -280,7 +292,7 @@ dialog \
 
   echo -e "\nDPKG --CONFIGURE -A" | sudo -u ${utente} tee -a ${logfile} > /dev/null
 
-  dpkg --configure -a | sudo -u ${utente} tee -a ${logfile} 2>&1 | \
+  dpkg --configure -a 2>&1 | sudo -u ${utente} tee -a ${logfile} | \
   dialog \
     --title "Riparazione pacchetti" \
     --backtitle "Varechina - Pulizia & Manutenzione Ubuntu" \
